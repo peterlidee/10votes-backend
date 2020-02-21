@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"workbench.colorCustomizations": {
+			"titleBar.activeForeground": "#000",
+			"titleBar.inactiveForeground": "#000000CC",
+			"titleBar.activeBackground": "#43a2db",
+			"titleBar.inactiveBackground": "#3787b6"
+		},
+		"files.exclude": {
+			"**/node_modules": true
+		}
+	}
+}
