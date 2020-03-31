@@ -16,19 +16,37 @@ type User {
   resetTokenExpiry: Float
   permissions: [Permission] @scalarList(strategy: RELATION)
   cart: [CartItem!]!
+  items: [Item]!
 }
 type Item {
   id: ID! @id
-  title: String!
-  description: String!
   image: String
   largeImage: String
-  price: Int!
   user: User!
+  location: Location!
+  tags: [Tag]!
 }
 type CartItem {
   id: ID! @id
   quantity: Int! @default(value: 1) 
   item: Item
   user: User!
+}
+
+type Tag {
+  id: ID! @id
+  name: String! @unique
+}
+
+type Country {
+  id: ID! @id
+  name: String! @unique
+}
+
+type Location {
+  id: ID! @id
+  name: String!
+  country: Country!
+  items: [Item]!
+  itemCount: Int! @default(value: 0)
 }

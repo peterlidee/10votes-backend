@@ -9,30 +9,97 @@ const Mutations = {
     async createItem(parent, args, ctx, info){
         // check if they are logged in
         if(!ctx.request.userId) throw new Error('You must be logged in to do that!');
+        // takes [tag] and returns [{id: tag}]!
+        const selectedTags = args.tags.map(tag => { return { id: tag }});
         const item = await ctx.db.mutation.createItem({
             data: {
-                // this is how we create a relationshit between the item and the user
+                image: args.image,
+                largeImage: args.largeImage,
+                // this is how we create a relationship between the item and the user
                 user: {
                     connect: {
                         id: ctx.request.userId
                     }
                 },
-                ...args
+                location: {
+                    connect: {
+                        id: args.location
+                    }
+                },
+                tags: {
+                    connect: selectedTags,
+                },
             }
         }, info);
+
+        // after creating the item, update the itemCount of the location
+        const location = await ctx.db.mutation.updateLocation({
+            where: { id: item.location.id },
+            data: { itemCount: item.location.itemCount + 1 }
+        });
 
         return item;
 
     },
 
+    async createTag(parent, args, ctx, info){
+        // only logged in people can create tags
+        //if(!ctx.request.userId) throw new Error('You must be logged in to do this');
+        const tag = await ctx.db.mutation.createTag({
+            data: {
+                name: args.name,
+            },
+        }, info);
+        return tag;
+    },
+
+    async createCountry(parent, args, ctx, info){
+        const country = await ctx.db.mutation.createCountry({
+            data: {
+                name: args.name,
+            }
+        }, info);
+        return country;
+    },
+
+    async createLocation(parent, args, ctx, info){
+        const location = await ctx.db.mutation.createLocation({
+            data: {
+                name: args.name,
+                country: {
+                    connect: {
+                        id: args.country
+                    }
+                },
+            }
+        }, info);
+        return location;
+    },
+
     updateItem(parent, args, ctx, info){
         // first take a copy of the updates
-        const updates = {...args};
+        // const updates = {...args};
         // remove the id from the updates
-        delete updates.id;
+        // delete updates.id;
+
+        // construct the data variable
+        let data = {};
+        // if there's a location (meaning it changed), add the location
+        if(args.location){
+            data.location = {
+                connect: { id: args.location }
+            }
+        }
+        // if there are tag(s) (meaning it changed), add the tag(s)
+        if(args.tags){
+            data.tags = {
+                set: args.tags.map(tag => { return { id: tag }}),
+            }
+        }
+
         // run the update method
         return ctx.db.mutation.updateItem({
-            data: updates,
+            data: data,
             where: {
                 id: args.id
             }
@@ -42,7 +109,7 @@ const Mutations = {
     async deleteItem(parent, args, ctx, info){
         const where = { id: args.id };
         // 1. find the item
-        const item = await ctx.db.query.item({ where }, `{ id title user { id }}`)
+        const item = await ctx.db.query.item({ where }, `{ id user { id }}`)
         // 2. check if they own item or have permissions
         // do they own it or do they have the permission
         const ownsItem = item.user.id === ctx.request.userId;
@@ -64,7 +131,7 @@ const Mutations = {
                 name: args.name,
                 email: args.email,
                 password: password,
-                permissions: { set: ['USER'] }
+                permissions: { set: ['USER'] },
             }
         }, info);
         //create the JWT token for them

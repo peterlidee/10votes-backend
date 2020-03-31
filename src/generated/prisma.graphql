@@ -1,11 +1,23 @@
 # source: https://eu1.prisma.sh/peter-b6c513/tenvotes/dev
-# timestamp: Mon Mar 09 2020 18:03:48 GMT+0100 (GMT+01:00)
+# timestamp: Tue Mar 31 2020 16:43:01 GMT+0200 (GMT+02:00)
 
 type AggregateCartItem {
   count: Int!
 }
 
+type AggregateCountry {
+  count: Int!
+}
+
 type AggregateItem {
+  count: Int!
+}
+
+type AggregateLocation {
+  count: Int!
+}
+
+type AggregateTag {
   count: Int!
 }
 
@@ -310,90 +322,68 @@ input CartItemWhereUniqueInput {
   id: ID
 }
 
-type Item implements Node {
+type Country implements Node {
   id: ID!
-  title: String!
-  description: String!
-  image: String
-  largeImage: String
-  price: Int!
-  user: User!
+  name: String!
 }
 
 """A connection to a list of items."""
-type ItemConnection {
+type CountryConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
 
   """A list of edges."""
-  edges: [ItemEdge]!
-  aggregate: AggregateItem!
+  edges: [CountryEdge]!
+  aggregate: AggregateCountry!
 }
 
-input ItemCreateInput {
+input CountryCreateInput {
   id: ID
-  title: String!
-  description: String!
-  image: String
-  largeImage: String
-  price: Int!
-  user: UserCreateOneInput!
+  name: String!
 }
 
-input ItemCreateOneInput {
-  create: ItemCreateInput
-  connect: ItemWhereUniqueInput
+input CountryCreateOneInput {
+  create: CountryCreateInput
+  connect: CountryWhereUniqueInput
 }
 
 """An edge in a connection."""
-type ItemEdge {
+type CountryEdge {
   """The item at the end of the edge."""
-  node: Item!
+  node: Country!
 
   """A cursor for use in pagination."""
   cursor: String!
 }
 
-enum ItemOrderByInput {
+enum CountryOrderByInput {
   id_ASC
   id_DESC
-  title_ASC
-  title_DESC
-  description_ASC
-  description_DESC
-  image_ASC
-  image_DESC
-  largeImage_ASC
-  largeImage_DESC
-  price_ASC
-  price_DESC
+  name_ASC
+  name_DESC
 }
 
-type ItemPreviousValues {
+type CountryPreviousValues {
   id: ID!
-  title: String!
-  description: String!
-  image: String
-  largeImage: String
-  price: Int!
+  name: String!
 }
 
-type ItemSubscriptionPayload {
+type CountrySubscriptionPayload {
   mutation: MutationType!
-  node: Item
+  node: Country
   updatedFields: [String!]
-  previousValues: ItemPreviousValues
+  previousValues: CountryPreviousValues
 }
 
-input ItemSubscriptionWhereInput {
+input CountrySubscriptionWhereInput {
   """Logical AND on all given filters."""
-  AND: [ItemSubscriptionWhereInput!]
+  AND: [CountrySubscriptionWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [ItemSubscriptionWhereInput!]
+  OR: [CountrySubscriptionWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [ItemSubscriptionWhereInput!]
+  NOT: [CountrySubscriptionWhereInput!]
 
   """The subscription event gets dispatched when it's listed in mutation_in"""
   mutation_in: [MutationType!]
@@ -412,58 +402,42 @@ input ItemSubscriptionWhereInput {
   The subscription event gets only dispatched when some of the field names included in this list have been updated
   """
   updatedFields_contains_some: [String!]
-  node: ItemWhereInput
+  node: CountryWhereInput
 }
 
-input ItemUpdateDataInput {
-  title: String
-  description: String
-  image: String
-  largeImage: String
-  price: Int
-  user: UserUpdateOneRequiredInput
+input CountryUpdateDataInput {
+  name: String
 }
 
-input ItemUpdateInput {
-  title: String
-  description: String
-  image: String
-  largeImage: String
-  price: Int
-  user: UserUpdateOneRequiredInput
+input CountryUpdateInput {
+  name: String
 }
 
-input ItemUpdateManyMutationInput {
-  title: String
-  description: String
-  image: String
-  largeImage: String
-  price: Int
+input CountryUpdateManyMutationInput {
+  name: String
 }
 
-input ItemUpdateOneInput {
-  create: ItemCreateInput
-  connect: ItemWhereUniqueInput
-  disconnect: Boolean
-  delete: Boolean
-  update: ItemUpdateDataInput
-  upsert: ItemUpsertNestedInput
+input CountryUpdateOneRequiredInput {
+  create: CountryCreateInput
+  connect: CountryWhereUniqueInput
+  update: CountryUpdateDataInput
+  upsert: CountryUpsertNestedInput
 }
 
-input ItemUpsertNestedInput {
-  update: ItemUpdateDataInput!
-  create: ItemCreateInput!
+input CountryUpsertNestedInput {
+  update: CountryUpdateDataInput!
+  create: CountryCreateInput!
 }
 
-input ItemWhereInput {
+input CountryWhereInput {
   """Logical AND on all given filters."""
-  AND: [ItemWhereInput!]
+  AND: [CountryWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [ItemWhereInput!]
+  OR: [CountryWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [ItemWhereInput!]
+  NOT: [CountryWhereInput!]
   id: ID
 
   """All values that are not equal to given value."""
@@ -504,86 +478,185 @@ input ItemWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
-  title: String
+  name: String
 
   """All values that are not equal to given value."""
-  title_not: String
+  name_not: String
 
   """All values that are contained in given list."""
-  title_in: [String!]
+  name_in: [String!]
 
   """All values that are not contained in given list."""
-  title_not_in: [String!]
+  name_not_in: [String!]
 
   """All values less than the given value."""
-  title_lt: String
+  name_lt: String
 
   """All values less than or equal the given value."""
-  title_lte: String
+  name_lte: String
 
   """All values greater than the given value."""
-  title_gt: String
+  name_gt: String
 
   """All values greater than or equal the given value."""
-  title_gte: String
+  name_gte: String
 
   """All values containing the given string."""
-  title_contains: String
+  name_contains: String
 
   """All values not containing the given string."""
-  title_not_contains: String
+  name_not_contains: String
 
   """All values starting with the given string."""
-  title_starts_with: String
+  name_starts_with: String
 
   """All values not starting with the given string."""
-  title_not_starts_with: String
+  name_not_starts_with: String
 
   """All values ending with the given string."""
-  title_ends_with: String
+  name_ends_with: String
 
   """All values not ending with the given string."""
-  title_not_ends_with: String
-  description: String
+  name_not_ends_with: String
+}
+
+input CountryWhereUniqueInput {
+  id: ID
+  name: String
+}
+
+type Item implements Node {
+  id: ID!
+  image: String
+  largeImage: String
+  user: User!
+  location: Location!
+  tags(where: TagWhereInput, orderBy: TagOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Tag!]
+}
+
+"""A connection to a list of items."""
+type ItemConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [ItemEdge]!
+  aggregate: AggregateItem!
+}
+
+input ItemCreateInput {
+  id: ID
+  image: String
+  largeImage: String
+  user: UserCreateOneWithoutItemsInput!
+  location: LocationCreateOneWithoutItemsInput!
+  tags: TagCreateManyInput
+}
+
+input ItemCreateManyWithoutLocationInput {
+  create: [ItemCreateWithoutLocationInput!]
+  connect: [ItemWhereUniqueInput!]
+}
+
+input ItemCreateManyWithoutUserInput {
+  create: [ItemCreateWithoutUserInput!]
+  connect: [ItemWhereUniqueInput!]
+}
+
+input ItemCreateOneInput {
+  create: ItemCreateInput
+  connect: ItemWhereUniqueInput
+}
+
+input ItemCreateWithoutLocationInput {
+  id: ID
+  image: String
+  largeImage: String
+  user: UserCreateOneWithoutItemsInput!
+  tags: TagCreateManyInput
+}
+
+input ItemCreateWithoutUserInput {
+  id: ID
+  image: String
+  largeImage: String
+  location: LocationCreateOneWithoutItemsInput!
+  tags: TagCreateManyInput
+}
+
+"""An edge in a connection."""
+type ItemEdge {
+  """The item at the end of the edge."""
+  node: Item!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum ItemOrderByInput {
+  id_ASC
+  id_DESC
+  image_ASC
+  image_DESC
+  largeImage_ASC
+  largeImage_DESC
+}
+
+type ItemPreviousValues {
+  id: ID!
+  image: String
+  largeImage: String
+}
+
+input ItemScalarWhereInput {
+  """Logical AND on all given filters."""
+  AND: [ItemScalarWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [ItemScalarWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [ItemScalarWhereInput!]
+  id: ID
 
   """All values that are not equal to given value."""
-  description_not: String
+  id_not: ID
 
   """All values that are contained in given list."""
-  description_in: [String!]
+  id_in: [ID!]
 
   """All values that are not contained in given list."""
-  description_not_in: [String!]
+  id_not_in: [ID!]
 
   """All values less than the given value."""
-  description_lt: String
+  id_lt: ID
 
   """All values less than or equal the given value."""
-  description_lte: String
+  id_lte: ID
 
   """All values greater than the given value."""
-  description_gt: String
+  id_gt: ID
 
   """All values greater than or equal the given value."""
-  description_gte: String
+  id_gte: ID
 
   """All values containing the given string."""
-  description_contains: String
+  id_contains: ID
 
   """All values not containing the given string."""
-  description_not_contains: String
+  id_not_contains: ID
 
   """All values starting with the given string."""
-  description_starts_with: String
+  id_starts_with: ID
 
   """All values not starting with the given string."""
-  description_not_starts_with: String
+  id_not_starts_with: ID
 
   """All values ending with the given string."""
-  description_ends_with: String
+  id_ends_with: ID
 
   """All values not ending with the given string."""
-  description_not_ends_with: String
+  id_not_ends_with: ID
   image: String
 
   """All values that are not equal to given value."""
@@ -664,32 +737,537 @@ input ItemWhereInput {
 
   """All values not ending with the given string."""
   largeImage_not_ends_with: String
-  price: Int
+}
+
+type ItemSubscriptionPayload {
+  mutation: MutationType!
+  node: Item
+  updatedFields: [String!]
+  previousValues: ItemPreviousValues
+}
+
+input ItemSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [ItemSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [ItemSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [ItemSubscriptionWhereInput!]
+
+  """The subscription event gets dispatched when it's listed in mutation_in"""
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: ItemWhereInput
+}
+
+input ItemUpdateDataInput {
+  image: String
+  largeImage: String
+  user: UserUpdateOneRequiredWithoutItemsInput
+  location: LocationUpdateOneRequiredWithoutItemsInput
+  tags: TagUpdateManyInput
+}
+
+input ItemUpdateInput {
+  image: String
+  largeImage: String
+  user: UserUpdateOneRequiredWithoutItemsInput
+  location: LocationUpdateOneRequiredWithoutItemsInput
+  tags: TagUpdateManyInput
+}
+
+input ItemUpdateManyDataInput {
+  image: String
+  largeImage: String
+}
+
+input ItemUpdateManyMutationInput {
+  image: String
+  largeImage: String
+}
+
+input ItemUpdateManyWithoutLocationInput {
+  create: [ItemCreateWithoutLocationInput!]
+  connect: [ItemWhereUniqueInput!]
+  set: [ItemWhereUniqueInput!]
+  disconnect: [ItemWhereUniqueInput!]
+  delete: [ItemWhereUniqueInput!]
+  update: [ItemUpdateWithWhereUniqueWithoutLocationInput!]
+  updateMany: [ItemUpdateManyWithWhereNestedInput!]
+  deleteMany: [ItemScalarWhereInput!]
+  upsert: [ItemUpsertWithWhereUniqueWithoutLocationInput!]
+}
+
+input ItemUpdateManyWithoutUserInput {
+  create: [ItemCreateWithoutUserInput!]
+  connect: [ItemWhereUniqueInput!]
+  set: [ItemWhereUniqueInput!]
+  disconnect: [ItemWhereUniqueInput!]
+  delete: [ItemWhereUniqueInput!]
+  update: [ItemUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [ItemUpdateManyWithWhereNestedInput!]
+  deleteMany: [ItemScalarWhereInput!]
+  upsert: [ItemUpsertWithWhereUniqueWithoutUserInput!]
+}
+
+input ItemUpdateManyWithWhereNestedInput {
+  where: ItemScalarWhereInput!
+  data: ItemUpdateManyDataInput!
+}
+
+input ItemUpdateOneInput {
+  create: ItemCreateInput
+  connect: ItemWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: ItemUpdateDataInput
+  upsert: ItemUpsertNestedInput
+}
+
+input ItemUpdateWithoutLocationDataInput {
+  image: String
+  largeImage: String
+  user: UserUpdateOneRequiredWithoutItemsInput
+  tags: TagUpdateManyInput
+}
+
+input ItemUpdateWithoutUserDataInput {
+  image: String
+  largeImage: String
+  location: LocationUpdateOneRequiredWithoutItemsInput
+  tags: TagUpdateManyInput
+}
+
+input ItemUpdateWithWhereUniqueWithoutLocationInput {
+  where: ItemWhereUniqueInput!
+  data: ItemUpdateWithoutLocationDataInput!
+}
+
+input ItemUpdateWithWhereUniqueWithoutUserInput {
+  where: ItemWhereUniqueInput!
+  data: ItemUpdateWithoutUserDataInput!
+}
+
+input ItemUpsertNestedInput {
+  update: ItemUpdateDataInput!
+  create: ItemCreateInput!
+}
+
+input ItemUpsertWithWhereUniqueWithoutLocationInput {
+  where: ItemWhereUniqueInput!
+  update: ItemUpdateWithoutLocationDataInput!
+  create: ItemCreateWithoutLocationInput!
+}
+
+input ItemUpsertWithWhereUniqueWithoutUserInput {
+  where: ItemWhereUniqueInput!
+  update: ItemUpdateWithoutUserDataInput!
+  create: ItemCreateWithoutUserInput!
+}
+
+input ItemWhereInput {
+  """Logical AND on all given filters."""
+  AND: [ItemWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [ItemWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [ItemWhereInput!]
+  id: ID
 
   """All values that are not equal to given value."""
-  price_not: Int
+  id_not: ID
 
   """All values that are contained in given list."""
-  price_in: [Int!]
+  id_in: [ID!]
 
   """All values that are not contained in given list."""
-  price_not_in: [Int!]
+  id_not_in: [ID!]
 
   """All values less than the given value."""
-  price_lt: Int
+  id_lt: ID
 
   """All values less than or equal the given value."""
-  price_lte: Int
+  id_lte: ID
 
   """All values greater than the given value."""
-  price_gt: Int
+  id_gt: ID
 
   """All values greater than or equal the given value."""
-  price_gte: Int
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  image: String
+
+  """All values that are not equal to given value."""
+  image_not: String
+
+  """All values that are contained in given list."""
+  image_in: [String!]
+
+  """All values that are not contained in given list."""
+  image_not_in: [String!]
+
+  """All values less than the given value."""
+  image_lt: String
+
+  """All values less than or equal the given value."""
+  image_lte: String
+
+  """All values greater than the given value."""
+  image_gt: String
+
+  """All values greater than or equal the given value."""
+  image_gte: String
+
+  """All values containing the given string."""
+  image_contains: String
+
+  """All values not containing the given string."""
+  image_not_contains: String
+
+  """All values starting with the given string."""
+  image_starts_with: String
+
+  """All values not starting with the given string."""
+  image_not_starts_with: String
+
+  """All values ending with the given string."""
+  image_ends_with: String
+
+  """All values not ending with the given string."""
+  image_not_ends_with: String
+  largeImage: String
+
+  """All values that are not equal to given value."""
+  largeImage_not: String
+
+  """All values that are contained in given list."""
+  largeImage_in: [String!]
+
+  """All values that are not contained in given list."""
+  largeImage_not_in: [String!]
+
+  """All values less than the given value."""
+  largeImage_lt: String
+
+  """All values less than or equal the given value."""
+  largeImage_lte: String
+
+  """All values greater than the given value."""
+  largeImage_gt: String
+
+  """All values greater than or equal the given value."""
+  largeImage_gte: String
+
+  """All values containing the given string."""
+  largeImage_contains: String
+
+  """All values not containing the given string."""
+  largeImage_not_contains: String
+
+  """All values starting with the given string."""
+  largeImage_starts_with: String
+
+  """All values not starting with the given string."""
+  largeImage_not_starts_with: String
+
+  """All values ending with the given string."""
+  largeImage_ends_with: String
+
+  """All values not ending with the given string."""
+  largeImage_not_ends_with: String
   user: UserWhereInput
+  location: LocationWhereInput
+  tags_every: TagWhereInput
+  tags_some: TagWhereInput
+  tags_none: TagWhereInput
 }
 
 input ItemWhereUniqueInput {
+  id: ID
+}
+
+type Location implements Node {
+  id: ID!
+  name: String!
+  country: Country!
+  items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Item!]
+  itemCount: Int!
+}
+
+"""A connection to a list of items."""
+type LocationConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [LocationEdge]!
+  aggregate: AggregateLocation!
+}
+
+input LocationCreateInput {
+  id: ID
+  name: String!
+  itemCount: Int
+  country: CountryCreateOneInput!
+  items: ItemCreateManyWithoutLocationInput
+}
+
+input LocationCreateOneWithoutItemsInput {
+  create: LocationCreateWithoutItemsInput
+  connect: LocationWhereUniqueInput
+}
+
+input LocationCreateWithoutItemsInput {
+  id: ID
+  name: String!
+  itemCount: Int
+  country: CountryCreateOneInput!
+}
+
+"""An edge in a connection."""
+type LocationEdge {
+  """The item at the end of the edge."""
+  node: Location!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum LocationOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  itemCount_ASC
+  itemCount_DESC
+}
+
+type LocationPreviousValues {
+  id: ID!
+  name: String!
+  itemCount: Int!
+}
+
+type LocationSubscriptionPayload {
+  mutation: MutationType!
+  node: Location
+  updatedFields: [String!]
+  previousValues: LocationPreviousValues
+}
+
+input LocationSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [LocationSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [LocationSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [LocationSubscriptionWhereInput!]
+
+  """The subscription event gets dispatched when it's listed in mutation_in"""
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: LocationWhereInput
+}
+
+input LocationUpdateInput {
+  name: String
+  itemCount: Int
+  country: CountryUpdateOneRequiredInput
+  items: ItemUpdateManyWithoutLocationInput
+}
+
+input LocationUpdateManyMutationInput {
+  name: String
+  itemCount: Int
+}
+
+input LocationUpdateOneRequiredWithoutItemsInput {
+  create: LocationCreateWithoutItemsInput
+  connect: LocationWhereUniqueInput
+  update: LocationUpdateWithoutItemsDataInput
+  upsert: LocationUpsertWithoutItemsInput
+}
+
+input LocationUpdateWithoutItemsDataInput {
+  name: String
+  itemCount: Int
+  country: CountryUpdateOneRequiredInput
+}
+
+input LocationUpsertWithoutItemsInput {
+  update: LocationUpdateWithoutItemsDataInput!
+  create: LocationCreateWithoutItemsInput!
+}
+
+input LocationWhereInput {
+  """Logical AND on all given filters."""
+  AND: [LocationWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [LocationWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [LocationWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+  itemCount: Int
+
+  """All values that are not equal to given value."""
+  itemCount_not: Int
+
+  """All values that are contained in given list."""
+  itemCount_in: [Int!]
+
+  """All values that are not contained in given list."""
+  itemCount_not_in: [Int!]
+
+  """All values less than the given value."""
+  itemCount_lt: Int
+
+  """All values less than or equal the given value."""
+  itemCount_lte: Int
+
+  """All values greater than the given value."""
+  itemCount_gt: Int
+
+  """All values greater than or equal the given value."""
+  itemCount_gte: Int
+  country: CountryWhereInput
+  items_every: ItemWhereInput
+  items_some: ItemWhereInput
+  items_none: ItemWhereInput
+}
+
+input LocationWhereUniqueInput {
   id: ID
 }
 
@@ -700,24 +1278,42 @@ Long can represent values between -(2^63) and 2^63 - 1.
 scalar Long
 
 type Mutation {
-  createCartItem(data: CartItemCreateInput!): CartItem!
-  createItem(data: ItemCreateInput!): Item!
   createUser(data: UserCreateInput!): User!
-  updateCartItem(data: CartItemUpdateInput!, where: CartItemWhereUniqueInput!): CartItem
-  updateItem(data: ItemUpdateInput!, where: ItemWhereUniqueInput!): Item
+  createCartItem(data: CartItemCreateInput!): CartItem!
+  createLocation(data: LocationCreateInput!): Location!
+  createCountry(data: CountryCreateInput!): Country!
+  createTag(data: TagCreateInput!): Tag!
+  createItem(data: ItemCreateInput!): Item!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
-  deleteCartItem(where: CartItemWhereUniqueInput!): CartItem
-  deleteItem(where: ItemWhereUniqueInput!): Item
+  updateCartItem(data: CartItemUpdateInput!, where: CartItemWhereUniqueInput!): CartItem
+  updateLocation(data: LocationUpdateInput!, where: LocationWhereUniqueInput!): Location
+  updateCountry(data: CountryUpdateInput!, where: CountryWhereUniqueInput!): Country
+  updateTag(data: TagUpdateInput!, where: TagWhereUniqueInput!): Tag
+  updateItem(data: ItemUpdateInput!, where: ItemWhereUniqueInput!): Item
   deleteUser(where: UserWhereUniqueInput!): User
-  upsertCartItem(where: CartItemWhereUniqueInput!, create: CartItemCreateInput!, update: CartItemUpdateInput!): CartItem!
-  upsertItem(where: ItemWhereUniqueInput!, create: ItemCreateInput!, update: ItemUpdateInput!): Item!
+  deleteCartItem(where: CartItemWhereUniqueInput!): CartItem
+  deleteLocation(where: LocationWhereUniqueInput!): Location
+  deleteCountry(where: CountryWhereUniqueInput!): Country
+  deleteTag(where: TagWhereUniqueInput!): Tag
+  deleteItem(where: ItemWhereUniqueInput!): Item
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
-  updateManyCartItems(data: CartItemUpdateManyMutationInput!, where: CartItemWhereInput): BatchPayload!
-  updateManyItems(data: ItemUpdateManyMutationInput!, where: ItemWhereInput): BatchPayload!
+  upsertCartItem(where: CartItemWhereUniqueInput!, create: CartItemCreateInput!, update: CartItemUpdateInput!): CartItem!
+  upsertLocation(where: LocationWhereUniqueInput!, create: LocationCreateInput!, update: LocationUpdateInput!): Location!
+  upsertCountry(where: CountryWhereUniqueInput!, create: CountryCreateInput!, update: CountryUpdateInput!): Country!
+  upsertTag(where: TagWhereUniqueInput!, create: TagCreateInput!, update: TagUpdateInput!): Tag!
+  upsertItem(where: ItemWhereUniqueInput!, create: ItemCreateInput!, update: ItemUpdateInput!): Item!
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
-  deleteManyCartItems(where: CartItemWhereInput): BatchPayload!
-  deleteManyItems(where: ItemWhereInput): BatchPayload!
+  updateManyCartItems(data: CartItemUpdateManyMutationInput!, where: CartItemWhereInput): BatchPayload!
+  updateManyLocations(data: LocationUpdateManyMutationInput!, where: LocationWhereInput): BatchPayload!
+  updateManyCountries(data: CountryUpdateManyMutationInput!, where: CountryWhereInput): BatchPayload!
+  updateManyTags(data: TagUpdateManyMutationInput!, where: TagWhereInput): BatchPayload!
+  updateManyItems(data: ItemUpdateManyMutationInput!, where: ItemWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyCartItems(where: CartItemWhereInput): BatchPayload!
+  deleteManyLocations(where: LocationWhereInput): BatchPayload!
+  deleteManyCountries(where: CountryWhereInput): BatchPayload!
+  deleteManyTags(where: TagWhereInput): BatchPayload!
+  deleteManyItems(where: ItemWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -757,15 +1353,24 @@ enum Permission {
 }
 
 type Query {
-  cartItems(where: CartItemWhereInput, orderBy: CartItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [CartItem]!
-  items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Item]!
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
-  cartItem(where: CartItemWhereUniqueInput!): CartItem
-  item(where: ItemWhereUniqueInput!): Item
+  cartItems(where: CartItemWhereInput, orderBy: CartItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [CartItem]!
+  locations(where: LocationWhereInput, orderBy: LocationOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Location]!
+  countries(where: CountryWhereInput, orderBy: CountryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Country]!
+  tags(where: TagWhereInput, orderBy: TagOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Tag]!
+  items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Item]!
   user(where: UserWhereUniqueInput!): User
-  cartItemsConnection(where: CartItemWhereInput, orderBy: CartItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CartItemConnection!
-  itemsConnection(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ItemConnection!
+  cartItem(where: CartItemWhereUniqueInput!): CartItem
+  location(where: LocationWhereUniqueInput!): Location
+  country(where: CountryWhereUniqueInput!): Country
+  tag(where: TagWhereUniqueInput!): Tag
+  item(where: ItemWhereUniqueInput!): Item
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  cartItemsConnection(where: CartItemWhereInput, orderBy: CartItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CartItemConnection!
+  locationsConnection(where: LocationWhereInput, orderBy: LocationOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): LocationConnection!
+  countriesConnection(where: CountryWhereInput, orderBy: CountryOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CountryConnection!
+  tagsConnection(where: TagWhereInput, orderBy: TagOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TagConnection!
+  itemsConnection(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ItemConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -775,9 +1380,326 @@ type Query {
 }
 
 type Subscription {
-  cartItem(where: CartItemSubscriptionWhereInput): CartItemSubscriptionPayload
-  item(where: ItemSubscriptionWhereInput): ItemSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  cartItem(where: CartItemSubscriptionWhereInput): CartItemSubscriptionPayload
+  location(where: LocationSubscriptionWhereInput): LocationSubscriptionPayload
+  country(where: CountrySubscriptionWhereInput): CountrySubscriptionPayload
+  tag(where: TagSubscriptionWhereInput): TagSubscriptionPayload
+  item(where: ItemSubscriptionWhereInput): ItemSubscriptionPayload
+}
+
+type Tag implements Node {
+  id: ID!
+  name: String!
+}
+
+"""A connection to a list of items."""
+type TagConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [TagEdge]!
+  aggregate: AggregateTag!
+}
+
+input TagCreateInput {
+  id: ID
+  name: String!
+}
+
+input TagCreateManyInput {
+  create: [TagCreateInput!]
+  connect: [TagWhereUniqueInput!]
+}
+
+"""An edge in a connection."""
+type TagEdge {
+  """The item at the end of the edge."""
+  node: Tag!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum TagOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+
+type TagPreviousValues {
+  id: ID!
+  name: String!
+}
+
+input TagScalarWhereInput {
+  """Logical AND on all given filters."""
+  AND: [TagScalarWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [TagScalarWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [TagScalarWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+}
+
+type TagSubscriptionPayload {
+  mutation: MutationType!
+  node: Tag
+  updatedFields: [String!]
+  previousValues: TagPreviousValues
+}
+
+input TagSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [TagSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [TagSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [TagSubscriptionWhereInput!]
+
+  """The subscription event gets dispatched when it's listed in mutation_in"""
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: TagWhereInput
+}
+
+input TagUpdateDataInput {
+  name: String
+}
+
+input TagUpdateInput {
+  name: String
+}
+
+input TagUpdateManyDataInput {
+  name: String
+}
+
+input TagUpdateManyInput {
+  create: [TagCreateInput!]
+  connect: [TagWhereUniqueInput!]
+  set: [TagWhereUniqueInput!]
+  disconnect: [TagWhereUniqueInput!]
+  delete: [TagWhereUniqueInput!]
+  update: [TagUpdateWithWhereUniqueNestedInput!]
+  updateMany: [TagUpdateManyWithWhereNestedInput!]
+  deleteMany: [TagScalarWhereInput!]
+  upsert: [TagUpsertWithWhereUniqueNestedInput!]
+}
+
+input TagUpdateManyMutationInput {
+  name: String
+}
+
+input TagUpdateManyWithWhereNestedInput {
+  where: TagScalarWhereInput!
+  data: TagUpdateManyDataInput!
+}
+
+input TagUpdateWithWhereUniqueNestedInput {
+  where: TagWhereUniqueInput!
+  data: TagUpdateDataInput!
+}
+
+input TagUpsertWithWhereUniqueNestedInput {
+  where: TagWhereUniqueInput!
+  update: TagUpdateDataInput!
+  create: TagCreateInput!
+}
+
+input TagWhereInput {
+  """Logical AND on all given filters."""
+  AND: [TagWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [TagWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [TagWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+}
+
+input TagWhereUniqueInput {
+  id: ID
+  name: String
 }
 
 type User implements Node {
@@ -789,6 +1711,7 @@ type User implements Node {
   resetTokenExpiry: Float
   permissions: [Permission!]!
   cart(where: CartItemWhereInput, orderBy: CartItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [CartItem!]
+  items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Item!]
 }
 
 """A connection to a list of items."""
@@ -810,15 +1733,16 @@ input UserCreateInput {
   resetTokenExpiry: Float
   permissions: UserCreatepermissionsInput
   cart: CartItemCreateManyWithoutUserInput
-}
-
-input UserCreateOneInput {
-  create: UserCreateInput
-  connect: UserWhereUniqueInput
+  items: ItemCreateManyWithoutUserInput
 }
 
 input UserCreateOneWithoutCartInput {
   create: UserCreateWithoutCartInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutItemsInput {
+  create: UserCreateWithoutItemsInput
   connect: UserWhereUniqueInput
 }
 
@@ -834,6 +1758,18 @@ input UserCreateWithoutCartInput {
   resetToken: String
   resetTokenExpiry: Float
   permissions: UserCreatepermissionsInput
+  items: ItemCreateManyWithoutUserInput
+}
+
+input UserCreateWithoutItemsInput {
+  id: ID
+  name: String!
+  email: String!
+  password: String!
+  resetToken: String
+  resetTokenExpiry: Float
+  permissions: UserCreatepermissionsInput
+  cart: CartItemCreateManyWithoutUserInput
 }
 
 """An edge in a connection."""
@@ -907,16 +1843,6 @@ input UserSubscriptionWhereInput {
   node: UserWhereInput
 }
 
-input UserUpdateDataInput {
-  name: String
-  email: String
-  password: String
-  resetToken: String
-  resetTokenExpiry: Float
-  permissions: UserUpdatepermissionsInput
-  cart: CartItemUpdateManyWithoutUserInput
-}
-
 input UserUpdateInput {
   name: String
   email: String
@@ -925,6 +1851,7 @@ input UserUpdateInput {
   resetTokenExpiry: Float
   permissions: UserUpdatepermissionsInput
   cart: CartItemUpdateManyWithoutUserInput
+  items: ItemUpdateManyWithoutUserInput
 }
 
 input UserUpdateManyMutationInput {
@@ -936,18 +1863,18 @@ input UserUpdateManyMutationInput {
   permissions: UserUpdatepermissionsInput
 }
 
-input UserUpdateOneRequiredInput {
-  create: UserCreateInput
-  connect: UserWhereUniqueInput
-  update: UserUpdateDataInput
-  upsert: UserUpsertNestedInput
-}
-
 input UserUpdateOneRequiredWithoutCartInput {
   create: UserCreateWithoutCartInput
   connect: UserWhereUniqueInput
   update: UserUpdateWithoutCartDataInput
   upsert: UserUpsertWithoutCartInput
+}
+
+input UserUpdateOneRequiredWithoutItemsInput {
+  create: UserCreateWithoutItemsInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateWithoutItemsDataInput
+  upsert: UserUpsertWithoutItemsInput
 }
 
 input UserUpdatepermissionsInput {
@@ -961,16 +1888,27 @@ input UserUpdateWithoutCartDataInput {
   resetToken: String
   resetTokenExpiry: Float
   permissions: UserUpdatepermissionsInput
+  items: ItemUpdateManyWithoutUserInput
 }
 
-input UserUpsertNestedInput {
-  update: UserUpdateDataInput!
-  create: UserCreateInput!
+input UserUpdateWithoutItemsDataInput {
+  name: String
+  email: String
+  password: String
+  resetToken: String
+  resetTokenExpiry: Float
+  permissions: UserUpdatepermissionsInput
+  cart: CartItemUpdateManyWithoutUserInput
 }
 
 input UserUpsertWithoutCartInput {
   update: UserUpdateWithoutCartDataInput!
   create: UserCreateWithoutCartInput!
+}
+
+input UserUpsertWithoutItemsInput {
+  update: UserUpdateWithoutItemsDataInput!
+  create: UserCreateWithoutItemsInput!
 }
 
 input UserWhereInput {
@@ -1207,6 +2145,9 @@ input UserWhereInput {
   cart_every: CartItemWhereInput
   cart_some: CartItemWhereInput
   cart_none: CartItemWhereInput
+  items_every: ItemWhereInput
+  items_some: ItemWhereInput
+  items_none: ItemWhereInput
 }
 
 input UserWhereUniqueInput {
