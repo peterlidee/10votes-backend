@@ -35,7 +35,7 @@ const Mutations = {
         // after creating the item, update the itemCount of the location
         const location = await ctx.db.mutation.updateLocation({
             where: { id: item.location.id },
-            data: { itemCount: item.location.itemCount + 1 }
+            data: { itemCount: item.location.items.length }
         });
 
         return item;
@@ -76,19 +76,18 @@ const Mutations = {
         return location;
     },
 
-    updateItem(parent, args, ctx, info){
-        // first take a copy of the updates
-        // const updates = {...args};
-        // remove the id from the updates
-        // delete updates.id;
+    async updateItem(parent, args, ctx, info){
+
+        console.log('update args', args);
 
         // construct the data variable
         let data = {};
-        // if there's a location (meaning it changed), add the location
+
+        // if there's a location (meaning it changed) add the location (1)
         if(args.location){
             data.location = {
                 connect: { id: args.location }
-            }
+            }            
         }
         // if there are tag(s) (meaning it changed), add the tag(s)
         if(args.tags){
@@ -98,12 +97,44 @@ const Mutations = {
         }
 
         // run the update method
-        return ctx.db.mutation.updateItem({
+        const item = await ctx.db.mutation.updateItem({
             data: data,
             where: {
                 id: args.id
             }
         }, info );
+
+        // if the location changed, we need to update the itemCount on Location for the previous and the new locations
+        if(args.location){
+
+            // query old location
+            const oldLocation = await ctx.db.query.location({
+                where: {id: args.oldLocation}
+            }, `{ items { id } }`);
+
+            // then update oldLocation itemCount
+            const updatedOldLocation = await ctx.db.mutation.updateLocation({
+                where: { id: args.oldLocation },
+                data: { itemCount: oldLocation.items.length }
+            }, `{ id }`);
+
+            // query new location
+            const newLocation = await ctx.db.query.location({
+                where: {id: args.location}
+            }, `{ items { id } }`);
+
+            // then update newLocation itemCount
+            const updatedNewLocation = await ctx.db.mutation.updateLocation({
+                where: { id: args.location },
+                data: { itemCount: newLocation.items.length }
+            }, `{ id }`);
+
+        }
+
+        // console.log('newLocation?', item);
+
+        return item;
+
     },
 
     async deleteItem(parent, args, ctx, info){
