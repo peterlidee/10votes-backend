@@ -6,9 +6,48 @@ const { transport, makeANiceEmail } = require('../mail');
 const { hasPermission } = require('../utils');
 
 const Mutations = {
+
     async createItem(parent, args, ctx, info){
         // check if they are logged in
         if(!ctx.request.userId) throw new Error('You must be logged in to do that!');
+
+        // handle location
+        // check if there is one
+        if(!args.locationName) throw new Error('You need to enter a location!');
+
+        let locationArgs;
+        // if there's a locationId, just connect it
+        if(args.locationId){
+            locationArgs = {
+                connect: { id: args.locationId }
+            }
+        }else{
+            // there's no locationId
+            // either the location doesn't exist yet, or wasn't selected
+            // does it exist?
+            const locationQuery = await ctx.db.query.locations({
+                where: {
+                    name: args.locationName
+                }
+            });
+            // if the location exists, locationQuery[0] will be the result
+            if(locationQuery[0]){
+                locationArgs = {
+                    connect: {
+                        id: locationQuery[0].id
+                    }
+                }
+            }else{
+                // else, create a new location
+                locationArgs = {
+                    create: {
+                        name: args.locationName,
+                        country: { connect: { name: "Belgium" }}
+                    }
+                }
+            }
+        }
+
         // takes [tag] and returns [{id: tag}]!
         const selectedTags = args.tags.map(tag => { return { id: tag }});
         const item = await ctx.db.mutation.createItem({
@@ -16,24 +55,14 @@ const Mutations = {
                 image: args.image,
                 largeImage: args.largeImage,
                 // this is how we create a relationship between the item and the user
-                user: {
-                    connect: {
-                        id: ctx.request.userId
-                    }
-                },
-                location: {
-                    connect: {
-                        id: args.location
-                    }
-                },
-                tags: {
-                    connect: selectedTags,
-                },
+                user: { connect: { id: ctx.request.userId }},
+                location: locationArgs,
+                tags: { connect: selectedTags },
             }
         }, info);
 
         // after creating the item, update the itemCount of the location
-        const location = await ctx.db.mutation.updateLocation({
+        const locationUpdate = await ctx.db.mutation.updateLocation({
             where: { id: item.location.id },
             data: { itemCount: item.location.items.length }
         });
@@ -83,12 +112,43 @@ const Mutations = {
         // construct the data variable
         let data = {};
 
-        // if there's a location (meaning it changed) add the location (1)
-        if(args.location){
-            data.location = {
-                connect: { id: args.location }
-            }            
+        // handle location (1)
+        // if there's a locationName (meaning it changed) add the location to the mutation
+        if(args.locationName){
+            // if there's a locationId, just connect it
+            if(args.locationId){
+                data.location = {
+                    connect: { id: args.locationId }
+                }  
+            }else{ // no locationId
+                // either the location doesn't exist yet, or wasn't selected
+                // does it exist?
+                const locationQuery = await ctx.db.query.locations({
+                    where: {
+                        name: args.locationName
+                    }
+                });
+                // if the location exists, locationQuery[0] will be the result
+                if(locationQuery[0]){
+                    data.location = {
+                        connect: {
+                            id: locationQuery[0].id
+                        }
+                    }
+                }else{
+                    // else (no results), create a new location
+                    data.location = {
+                        create: {
+                            name: args.locationName,
+                            country: { connect: { name: "Belgium" }}
+                        }
+                    }
+                }
+            }          
         }
+
+        console.log('variable data', data);
+
         // if there are tag(s) (meaning it changed), add the tag(s)
         if(args.tags){
             data.tags = {
@@ -104,17 +164,18 @@ const Mutations = {
             }
         }, info );
 
+        // handle location (part 2) (handle it after the mutation)
         // if the location changed, we need to update the itemCount on Location for the previous and the new locations
         if(args.location){
 
             // query old location
             const oldLocation = await ctx.db.query.location({
-                where: {id: args.oldLocation}
+                where: {id: args.oldLocationId}
             }, `{ items { id } }`);
 
             // then update oldLocation itemCount
             const updatedOldLocation = await ctx.db.mutation.updateLocation({
-                where: { id: args.oldLocation },
+                where: { id: args.oldLocationId },
                 data: { itemCount: oldLocation.items.length }
             }, `{ id }`);
 
