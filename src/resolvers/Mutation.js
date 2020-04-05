@@ -107,7 +107,7 @@ const Mutations = {
 
     async updateItem(parent, args, ctx, info){
 
-        console.log('update args', args);
+        //console.log('update args', args);
 
         // construct the data variable
         let data = {};
@@ -147,7 +147,7 @@ const Mutations = {
             }          
         }
 
-        console.log('variable data', data);
+        //console.log('variable data', data);
 
         // if there are tag(s) (meaning it changed), add the tag(s)
         if(args.tags){
