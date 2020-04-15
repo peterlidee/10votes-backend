@@ -6,8 +6,8 @@ type SuccessMessage{
 
 type Mutation{
     
-    createItem(image: String, largeImage: String, locationId: ID, locationName: String, tags: [ID]!): Item!
-    updateItem(id: ID!, locationName: String, locationId: ID, oldLocationId: ID, tags: [ID]): Item!
+    createItem(image: String, largeImage: String, locationId: ID, locationName: String, tagNames: [String]!, tagIds: [ID]!): Item!
+    updateItem(id: ID!, locationName: String, locationId: ID, oldLocationId: ID, tagNames: [String], tagIds: [ID], oldTagIds: [ID]): Item!
 
     deleteItem(id: ID!): Item
     signup(email: String!, password: String!, name: String!): User!
