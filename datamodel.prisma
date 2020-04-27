@@ -17,6 +17,7 @@ type User {
   permissions: [Permission] @scalarList(strategy: RELATION)
   cart: [CartItem!]!
   items: [Item]!
+  votes: [Vote]!
 }
 type Item {
   id: ID! @id
@@ -25,6 +26,10 @@ type Item {
   user: User!
   location: Location!
   tags: [Tag]!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+  votes: [Vote]! @relation(name: "ItemToVote", onDelete: CASCADE)
+  voteCount: Int @default(value: 0)
 }
 type CartItem {
   id: ID! @id
@@ -49,4 +54,10 @@ type Location {
   country: Country!
   items: [Item]!
   itemCount: Int! @default(value: 0)
+}
+
+type Vote {
+  id: ID! @id
+  item: Item! @relation(name: "ItemToVote", onDelete: SET_NULL)
+  user: User! 
 }

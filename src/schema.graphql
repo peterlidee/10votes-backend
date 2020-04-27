@@ -7,7 +7,7 @@ type SuccessMessage{
 type Mutation{
     
     createItem(image: String, largeImage: String, locationId: ID, locationName: String, tagNames: [String]!, tagIds: [ID]!): Item!
-    updateItem(id: ID!, locationName: String, locationId: ID, oldLocationId: ID, tagNames: [String], tagIds: [ID], oldTagIds: [ID]): Item!
+    updateItem(id: ID!, locationName: String, locationId: ID, oldLocationId: ID, tagNames: [String], tagIds: [ID], oldTagIds: [ID], voteCount: Int): Item!
 
     deleteItem(id: ID!): Item
     signup(email: String!, password: String!, name: String!): User!
@@ -22,6 +22,9 @@ type Mutation{
     createCountry(name: String!): Country!
     createLocation(name: String!, country: ID!): Location!
     updateLocation(id: ID!, itemCount: Int): Location!
+
+    castVote(itemId: ID!): Vote!
+    deleteVote(voteId: ID!, itemId: ID!): Vote!
 }
 type Query{
     items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
@@ -40,4 +43,5 @@ type User{
     permissions: [Permission!]!
     cart: [CartItem!]!
     items: [Item]!
+    votes: [Vote]!
 }

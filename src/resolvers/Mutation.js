@@ -101,14 +101,17 @@ const Mutations = {
                     noIdTags.push(uniqueTagNames[i]);
                 }
             });
+
             // take the tags that don't have an id and query them to see if they exist
             const tagsQuery = await ctx.db.query.tags({
                 where: { name_in: noIdTags }
             });
+
             // now we have a search result
             // check for each of the names we have, if it yielded a result
             noIdTags.map(noIdTag => {
-                const match = tagsQuery.find(tagQuery => tagQuery.name.toLowerCase() === noIdTag);
+                console.log('the tag', noIdTag);
+                const match = tagsQuery.find(tagQuery => tagQuery.name.toLowerCase() === noIdTag.toLowerCase());
                 if(match){
                     connectTags.push(match.id)
                 }else{
@@ -134,6 +137,7 @@ const Mutations = {
                 user: { connect: { id: ctx.request.userId }},
                 location: locationArgs,
                 tags: tagsArgs,
+                voteCount: 0,
             }
         }, info);
 
@@ -182,6 +186,7 @@ const Mutations = {
     },
 
     async updateItem(parent, args, ctx, info){
+        if(!ctx.request.userId) throw new Error('You need to be logged in for that');
 
         // construct the data variable
         let data = {};
@@ -360,7 +365,7 @@ const Mutations = {
     async deleteItem(parent, args, ctx, info){
         const where = { id: args.id };
         // 1. find the item
-        const item = await ctx.db.query.item({ where }, `{ id user { id }}`)
+        const item = await ctx.db.query.item({ where }, `{ id user { id } votes{ id } }`)
         // 2. check if they own item or have permissions
         // do they own it or do they have the permission
         const ownsItem = item.user.id === ctx.request.userId;
@@ -369,7 +374,12 @@ const Mutations = {
             throw new Error('You don\'t have permission to do that.')
         }
         // 3. delete item
-        return ctx.db.mutation.deleteItem({ where }, info);
+        const deleted = ctx.db.mutation.deleteItem({ where }, info);
+
+        // 4. delete all the votes that were made on this item
+        // solved with onDelete on datamodel
+
+        return deleted;
     },
 
     async signup(parent, args, ctx, info){
@@ -535,6 +545,66 @@ const Mutations = {
         return ctx.db.mutation.deleteCartItem({
             where: { id: args.id },
         }, info)
+    },
+
+    async castVote(parent, args, ctx, info){
+        // 1. is the user logged in?
+        const userId = ctx.request.userId;
+        if(!userId) throw new Error('You must be logged in');
+
+        // 2. do they have votes left? TODO
+        if(ctx.request.user.votes.length >= 10) throw new Error('You have no votes left');
+
+        // 3. only one vote per item!!
+        const itemInVotes = ctx.request.user.votes.filter(vote => vote.item.id === args.itemId).length > 0;
+        if(itemInVotes) throw new Error('You already voted for this item');
+
+        // 4. don't allow votes in own items
+        const itemInOwnItems = ctx.request.user.items.filter(item => item.id === args.itemId).length > 0;
+        if(itemInOwnItems) throw new Error('Voting on your own pictures leads to the dark side.')
+
+        // 5. cast the vote
+        const vote = await ctx.db.mutation.createVote({
+            data: {
+                item: { connect: { id: args.itemId }},
+                user: { connect: { id: userId }},
+            }
+        }, info);
+
+        // 6. use const vote to retrieve vote > items > votes , then update voteCount
+        const update = ctx.db.mutation.updateItem({
+            where: { id: args.itemId },
+            data: { voteCount: vote.item.votes.length }
+        });
+        
+        // 7. return vote
+        return vote;
+    },
+
+    async deleteVote(parent, args, ctx, info){
+        console.log('args', args);
+        // 1. is the user logged in?
+        const userId = ctx.request.userId;
+        if(!userId) throw new Error('You must be logged in');
+
+        // 2. did they actually vote on this item?
+        const voteInVotes = ctx.request.user.votes.filter(vote => vote.id === args.voteId).length > 0;
+        if(!voteInVotes) throw new Error('You did not vote for this item');
+
+        // 3. delete the vote
+        const vote = await ctx.db.mutation.deleteVote({
+            where: { id: args.voteId }
+        }, info);
+
+        // 4. update item's voteCount
+        // const vote returns vote > item > votes
+        const update = ctx.db.mutation.updateItem({
+            where: { id: args.itemId },
+            data: { voteCount: vote.item.votes.length }
+        });
+
+        // 5. return vote
+        return vote;
     },
 
 };

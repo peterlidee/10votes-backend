@@ -6,6 +6,7 @@ const Query = {
     items: forwardTo('db'),
     item: forwardTo('db'),
     itemsConnection: forwardTo('db'),
+    
     async me(parent, args, ctx, info){
         // check if there is a current user id
         if(!ctx.request.userId){
