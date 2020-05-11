@@ -1,5 +1,5 @@
 # source: https://eu1.prisma.sh/peter-b6c513/tenvotes/dev
-# timestamp: Mon Apr 20 2020 17:45:45 GMT+0200 (GMT+02:00)
+# timestamp: Thu Apr 30 2020 10:57:28 GMT+0200 (GMT+02:00)
 
 type AggregateCartItem {
   count: Int!
@@ -329,6 +329,7 @@ input CartItemWhereUniqueInput {
 type Country implements Node {
   id: ID!
   name: String!
+  countryCode: String!
 }
 
 """A connection to a list of items."""
@@ -344,6 +345,7 @@ type CountryConnection {
 input CountryCreateInput {
   id: ID
   name: String!
+  countryCode: String!
 }
 
 input CountryCreateOneInput {
@@ -365,11 +367,14 @@ enum CountryOrderByInput {
   id_DESC
   name_ASC
   name_DESC
+  countryCode_ASC
+  countryCode_DESC
 }
 
 type CountryPreviousValues {
   id: ID!
   name: String!
+  countryCode: String!
 }
 
 type CountrySubscriptionPayload {
@@ -411,14 +416,17 @@ input CountrySubscriptionWhereInput {
 
 input CountryUpdateDataInput {
   name: String
+  countryCode: String
 }
 
 input CountryUpdateInput {
   name: String
+  countryCode: String
 }
 
 input CountryUpdateManyMutationInput {
   name: String
+  countryCode: String
 }
 
 input CountryUpdateOneRequiredInput {
@@ -522,11 +530,52 @@ input CountryWhereInput {
 
   """All values not ending with the given string."""
   name_not_ends_with: String
+  countryCode: String
+
+  """All values that are not equal to given value."""
+  countryCode_not: String
+
+  """All values that are contained in given list."""
+  countryCode_in: [String!]
+
+  """All values that are not contained in given list."""
+  countryCode_not_in: [String!]
+
+  """All values less than the given value."""
+  countryCode_lt: String
+
+  """All values less than or equal the given value."""
+  countryCode_lte: String
+
+  """All values greater than the given value."""
+  countryCode_gt: String
+
+  """All values greater than or equal the given value."""
+  countryCode_gte: String
+
+  """All values containing the given string."""
+  countryCode_contains: String
+
+  """All values not containing the given string."""
+  countryCode_not_contains: String
+
+  """All values starting with the given string."""
+  countryCode_starts_with: String
+
+  """All values not starting with the given string."""
+  countryCode_not_starts_with: String
+
+  """All values ending with the given string."""
+  countryCode_ends_with: String
+
+  """All values not ending with the given string."""
+  countryCode_not_ends_with: String
 }
 
 input CountryWhereUniqueInput {
   id: ID
   name: String
+  countryCode: String
 }
 
 scalar DateTime
@@ -1230,6 +1279,7 @@ input ItemWhereUniqueInput {
 type Location implements Node {
   id: ID!
   name: String!
+  slug: String!
   country: Country!
   items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Item!]
   itemCount: Int!
@@ -1248,6 +1298,7 @@ type LocationConnection {
 input LocationCreateInput {
   id: ID
   name: String!
+  slug: String!
   itemCount: Int
   country: CountryCreateOneInput!
   items: ItemCreateManyWithoutLocationInput
@@ -1261,6 +1312,7 @@ input LocationCreateOneWithoutItemsInput {
 input LocationCreateWithoutItemsInput {
   id: ID
   name: String!
+  slug: String!
   itemCount: Int
   country: CountryCreateOneInput!
 }
@@ -1279,6 +1331,8 @@ enum LocationOrderByInput {
   id_DESC
   name_ASC
   name_DESC
+  slug_ASC
+  slug_DESC
   itemCount_ASC
   itemCount_DESC
 }
@@ -1286,6 +1340,7 @@ enum LocationOrderByInput {
 type LocationPreviousValues {
   id: ID!
   name: String!
+  slug: String!
   itemCount: Int!
 }
 
@@ -1328,6 +1383,7 @@ input LocationSubscriptionWhereInput {
 
 input LocationUpdateInput {
   name: String
+  slug: String
   itemCount: Int
   country: CountryUpdateOneRequiredInput
   items: ItemUpdateManyWithoutLocationInput
@@ -1335,6 +1391,7 @@ input LocationUpdateInput {
 
 input LocationUpdateManyMutationInput {
   name: String
+  slug: String
   itemCount: Int
 }
 
@@ -1347,6 +1404,7 @@ input LocationUpdateOneRequiredWithoutItemsInput {
 
 input LocationUpdateWithoutItemsDataInput {
   name: String
+  slug: String
   itemCount: Int
   country: CountryUpdateOneRequiredInput
 }
@@ -1445,6 +1503,46 @@ input LocationWhereInput {
 
   """All values not ending with the given string."""
   name_not_ends_with: String
+  slug: String
+
+  """All values that are not equal to given value."""
+  slug_not: String
+
+  """All values that are contained in given list."""
+  slug_in: [String!]
+
+  """All values that are not contained in given list."""
+  slug_not_in: [String!]
+
+  """All values less than the given value."""
+  slug_lt: String
+
+  """All values less than or equal the given value."""
+  slug_lte: String
+
+  """All values greater than the given value."""
+  slug_gt: String
+
+  """All values greater than or equal the given value."""
+  slug_gte: String
+
+  """All values containing the given string."""
+  slug_contains: String
+
+  """All values not containing the given string."""
+  slug_not_contains: String
+
+  """All values starting with the given string."""
+  slug_starts_with: String
+
+  """All values not starting with the given string."""
+  slug_not_starts_with: String
+
+  """All values ending with the given string."""
+  slug_ends_with: String
+
+  """All values not ending with the given string."""
+  slug_not_ends_with: String
   itemCount: Int
 
   """All values that are not equal to given value."""
@@ -1475,6 +1573,7 @@ input LocationWhereInput {
 
 input LocationWhereUniqueInput {
   id: ID
+  slug: String
 }
 
 """

@@ -4,6 +4,7 @@ const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 const { transport, makeANiceEmail } = require('../mail');
 const { hasPermission } = require('../utils');
+const slugify = require('slugify');
 
 const Mutations = {
 
@@ -39,9 +40,12 @@ const Mutations = {
                 }
             }else{
                 // else, create a new location
+                // make a slug
+                const slug = slugify(args.locationName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
                 locationArgs = {
                     create: {
                         name: args.locationName,
+                        slug: slug,
                         country: { connect: { name: "Belgium" }}
                     }
                 }
@@ -110,7 +114,7 @@ const Mutations = {
             // now we have a search result
             // check for each of the names we have, if it yielded a result
             noIdTags.map(noIdTag => {
-                console.log('the tag', noIdTag);
+                // console.log('the tag', noIdTag);
                 const match = tagsQuery.find(tagQuery => tagQuery.name.toLowerCase() === noIdTag.toLowerCase());
                 if(match){
                     connectTags.push(match.id)
@@ -166,18 +170,21 @@ const Mutations = {
         const country = await ctx.db.mutation.createCountry({
             data: {
                 name: args.name,
+                countryCode: args.countryCode,
             }
         }, info);
         return country;
     },
 
     async createLocation(parent, args, ctx, info){
+        const slug = slugify(args.name, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
         const location = await ctx.db.mutation.createLocation({
             data: {
                 name: args.name,
+                slug: slug,
                 country: {
                     connect: {
-                        id: args.country
+                        name: "Belgium"
                     }
                 },
             }
@@ -186,7 +193,12 @@ const Mutations = {
     },
 
     async updateItem(parent, args, ctx, info){
+        // you need to be logged in
         if(!ctx.request.userId) throw new Error('You need to be logged in for that');
+        // also, you need to own the item TODO!!!!!!
+        //console.log(ctx.user);
+        //if()
+        
 
         // construct the data variable
         let data = {};
@@ -216,9 +228,12 @@ const Mutations = {
                     }
                 }else{
                     // else (no results), create a new location
+                    // create slug first
+                    const slug = slugify(args.locationName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
                     data.location = {
                         create: {
                             name: args.locationName,
+                            slug: slug,
                             country: { connect: { name: "Belgium" }}
                         }
                     }

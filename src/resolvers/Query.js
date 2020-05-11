@@ -27,8 +27,10 @@ const Query = {
     },
 
     tags: forwardTo('db'),
+    location: forwardTo('db'),
     locations: forwardTo('db'),
     locationsConnection: forwardTo('db'),
+    country: forwardTo('db'),
 
 };
 

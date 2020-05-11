@@ -46,11 +46,13 @@ type Tag {
 type Country {
   id: ID! @id
   name: String! @unique
+  countryCode: String! @unique
 }
 
 type Location {
   id: ID! @id
   name: String!
+  slug: String! @unique
   country: Country!
   items: [Item]!
   itemCount: Int! @default(value: 0)

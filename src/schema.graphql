@@ -19,7 +19,7 @@ type Mutation{
     addToCart(id: ID!): CartItem
     removeFromCart(id: ID!): CartItem
     createTag(name: String!): Tag!
-    createCountry(name: String!): Country!
+    createCountry(name: String!, countryCode: String!): Country!
     createLocation(name: String!, country: ID!): Location!
     updateLocation(id: ID!, itemCount: Int): Location!
 
@@ -35,6 +35,8 @@ type Query{
     tags(where: TagWhereInput): [Tag]!
     locations(where: LocationWhereInput): [Location]!
     locationsConnection(where: LocationWhereInput): LocationConnection!
+    location(where: LocationWhereUniqueInput): Location
+    country(where: CountryWhereUniqueInput): Country
 }
 type User{
     id: ID!
