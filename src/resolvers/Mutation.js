@@ -128,7 +128,10 @@ const Mutations = {
                 tagsArgs.connect = connectTags.map(connectTag => { return { id: connectTag }});
             }
             if(createTags[0]){
-                tagsArgs.create = createTags.map(createTag => { return { name: createTag }});
+                tagsArgs.create = createTags.map(createTag => {
+                    const slug = slugify(createTag, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+                    return { name: createTag, slug: slug }
+                });
             }
         }
 
@@ -161,11 +164,13 @@ const Mutations = {
         const tag = await ctx.db.mutation.createTag({
             data: {
                 name: args.name,
+                slug: args.slug
             },
         }, info);
         return tag;
     },
 
+    /*
     async createCountry(parent, args, ctx, info){
         const country = await ctx.db.mutation.createCountry({
             data: {
@@ -190,7 +195,7 @@ const Mutations = {
             }
         }, info);
         return location;
-    },
+    },*/
 
     async updateItem(parent, args, ctx, info){
         // you need to be logged in
@@ -330,7 +335,10 @@ const Mutations = {
                 data.tags.connect = connectTags.map(connectTag => { return { id: connectTag }});
             }
             if(createTags[0]){
-                data.tags.create = createTags.map(createTag => { return { name: createTag }});
+                data.tags.create = createTags.map(createTag => {
+                    const slug = slugify(createTag, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+                    return { name: createTag, slug: slug }
+                });
             }
             if(disconnectTags[0]){
                 data.tags.disconnect = disconnectTags.map(disconnectTag => { return { id: disconnectTag }});

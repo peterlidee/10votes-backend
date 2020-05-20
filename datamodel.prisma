@@ -41,6 +41,7 @@ type CartItem {
 type Tag {
   id: ID! @id
   name: String! @unique
+  slug: String! @unique
 }
 
 type Country {

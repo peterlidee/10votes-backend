@@ -18,7 +18,7 @@ type Mutation{
     updatePermissions(permissions: [Permission], userId: ID!): User!
     addToCart(id: ID!): CartItem
     removeFromCart(id: ID!): CartItem
-    createTag(name: String!): Tag!
+    createTag(name: String!, slug: String!): Tag!
     createCountry(name: String!, countryCode: String!): Country!
     createLocation(name: String!, country: ID!): Location!
     updateLocation(id: ID!, itemCount: Int): Location!
@@ -32,6 +32,7 @@ type Query{
     itemsConnection(where: ItemWhereInput): ItemConnection!
     me: User
     users: [User]!
+    tag(where: TagWhereUniqueInput!): Tag
     tags(where: TagWhereInput): [Tag]!
     locations(where: LocationWhereInput): [Location]!
     locationsConnection(where: LocationWhereInput): LocationConnection!
@@ -46,4 +47,13 @@ type User{
     cart: [CartItem!]!
     items: [Item]!
     votes: [Vote]!
+}
+
+enum ItemOrderByInput {
+  updatedAt_ASC
+  updatedAt_DESC
+  voteCount_ASC
+  voteCount_DESC
+  createdAt_ASC
+  createdAt_DESC
 }

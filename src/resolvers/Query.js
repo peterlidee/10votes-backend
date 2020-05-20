@@ -26,6 +26,7 @@ const Query = {
         return ctx.db.query.users({}, info);
     },
 
+    tag: forwardTo('db'),
     tags: forwardTo('db'),
     location: forwardTo('db'),
     locations: forwardTo('db'),
