@@ -527,49 +527,6 @@ const Mutations = {
         }, info);
     },
 
-    async addToCart(parent, args, ctx, info){
-        // 1. are they logged in
-        const userId = ctx.request.userId;
-        if(!userId) throw new Error('You must be logged in');
-        // 2. query users current cart
-        const [existingCartItem] = await ctx.db.query.cartItems({
-            where: {
-                user: { id: userId },
-                item: { id: args.id },
-            }
-        });
-        // 3. check if the item is already in the cart
-        // 4. increment by 1 if it is
-        if(existingCartItem){
-            return ctx.db.mutation.updateCartItem({
-                where: { id: existingCartItem.id },
-                data: { quantity: existingCartItem.quantity + 1 },
-            }, info)
-        }
-        // 5. if not, create fresh cart item
-        return ctx.db.mutation.createCartItem({
-            data: {
-                user: { connect: { id: userId } },
-                item: { connect: { id: args.id } },
-            }
-        }, info)
-    },
-
-    async removeFromCart(parent, args, ctx, info){
-        // 1. find cartItem
-        const cartItem = await ctx.db.query.cartItem({
-            where: { id: args.id }
-        }, `{ id, user { id } }`);
-        // 1.5 make sure we found an item
-        if(!cartItem) throw new Error('No cartitem found');
-        // 2. do they own cartItem
-        if(cartItem.user.id !== ctx.request.userId) throw new Error('You don\'t own this item');
-        // 3. delete cartItem
-        return ctx.db.mutation.deleteCartItem({
-            where: { id: args.id },
-        }, info)
-    },
-
     async castVote(parent, args, ctx, info){
         // 1. is the user logged in?
         const userId = ctx.request.userId;

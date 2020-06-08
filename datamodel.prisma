@@ -15,7 +15,6 @@ type User {
   resetToken: String
   resetTokenExpiry: Float
   permissions: [Permission] @scalarList(strategy: RELATION)
-  cart: [CartItem!]!
   items: [Item]!
   votes: [Vote]!
 }
@@ -30,12 +29,6 @@ type Item {
   updatedAt: DateTime! @updatedAt
   votes: [Vote]! @relation(name: "ItemToVote", onDelete: CASCADE)
   voteCount: Int @default(value: 0)
-}
-type CartItem {
-  id: ID! @id
-  quantity: Int! @default(value: 1) 
-  item: Item
-  user: User!
 }
 
 type Tag {
