@@ -1,5 +1,5 @@
 # source: https://eu1.prisma.sh/peter-b6c513/tenvotes/dev
-# timestamp: Mon Jun 08 2020 21:52:20 GMT+0200 (GMT+02:00)
+# timestamp: Mon Jun 15 2020 11:51:17 GMT+0200 (GMT+02:00)
 
 type AggregateCountry {
   count: Int!
@@ -957,7 +957,6 @@ type Location implements Node {
   slug: String!
   country: Country!
   items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Item!]
-  itemCount: Int!
 }
 
 """A connection to a list of items."""
@@ -974,7 +973,6 @@ input LocationCreateInput {
   id: ID
   name: String!
   slug: String!
-  itemCount: Int
   country: CountryCreateOneInput!
   items: ItemCreateManyWithoutLocationInput
 }
@@ -988,7 +986,6 @@ input LocationCreateWithoutItemsInput {
   id: ID
   name: String!
   slug: String!
-  itemCount: Int
   country: CountryCreateOneInput!
 }
 
@@ -1008,15 +1005,12 @@ enum LocationOrderByInput {
   name_DESC
   slug_ASC
   slug_DESC
-  itemCount_ASC
-  itemCount_DESC
 }
 
 type LocationPreviousValues {
   id: ID!
   name: String!
   slug: String!
-  itemCount: Int!
 }
 
 type LocationSubscriptionPayload {
@@ -1059,7 +1053,6 @@ input LocationSubscriptionWhereInput {
 input LocationUpdateInput {
   name: String
   slug: String
-  itemCount: Int
   country: CountryUpdateOneRequiredInput
   items: ItemUpdateManyWithoutLocationInput
 }
@@ -1067,7 +1060,6 @@ input LocationUpdateInput {
 input LocationUpdateManyMutationInput {
   name: String
   slug: String
-  itemCount: Int
 }
 
 input LocationUpdateOneRequiredWithoutItemsInput {
@@ -1080,7 +1072,6 @@ input LocationUpdateOneRequiredWithoutItemsInput {
 input LocationUpdateWithoutItemsDataInput {
   name: String
   slug: String
-  itemCount: Int
   country: CountryUpdateOneRequiredInput
 }
 
@@ -1218,28 +1209,6 @@ input LocationWhereInput {
 
   """All values not ending with the given string."""
   slug_not_ends_with: String
-  itemCount: Int
-
-  """All values that are not equal to given value."""
-  itemCount_not: Int
-
-  """All values that are contained in given list."""
-  itemCount_in: [Int!]
-
-  """All values that are not contained in given list."""
-  itemCount_not_in: [Int!]
-
-  """All values less than the given value."""
-  itemCount_lt: Int
-
-  """All values less than or equal the given value."""
-  itemCount_lte: Int
-
-  """All values greater than the given value."""
-  itemCount_gt: Int
-
-  """All values greater than or equal the given value."""
-  itemCount_gte: Int
   country: CountryWhereInput
   items_every: ItemWhereInput
   items_some: ItemWhereInput

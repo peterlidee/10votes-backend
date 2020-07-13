@@ -10,11 +10,13 @@ type Mutation{
     updateItem(id: ID!, locationName: String, locationId: ID, oldLocationId: ID, tagNames: [String], tagIds: [ID], oldTagIds: [ID], voteCount: Int): Item!
 
     deleteItem(id: ID!): Item
+
     signup(email: String!, password: String!, name: String!): User!
-    signin(email: String!, password: String!): User!
-    signout: SuccessMessage
+    login(email: String!, password: String!): User!
+    logout: SuccessMessage
     requestReset(email: String!): SuccessMessage
     resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
+    
     updatePermissions(permissions: [Permission], userId: ID!): User!
     createTag(name: String!, slug: String!): Tag!
     createCountry(name: String!, countryCode: String!): Country!
@@ -25,16 +27,16 @@ type Mutation{
     deleteVote(voteId: ID!, itemId: ID!): Vote!
 }
 type Query{
-    items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
     item(where: ItemWhereUniqueInput!): Item
+    items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
     itemsConnection(where: ItemWhereInput): ItemConnection!
     me: User
     users: [User]!
     tag(where: TagWhereUniqueInput!): Tag
     tags(where: TagWhereInput): [Tag]!
+    location(where: LocationWhereUniqueInput): Location
     locations(where: LocationWhereInput): [Location]!
     locationsConnection(where: LocationWhereInput): LocationConnection!
-    location(where: LocationWhereUniqueInput): Location
     country(where: CountryWhereUniqueInput): Country
 }
 type User{
@@ -42,7 +44,6 @@ type User{
     name: String!
     email: String!
     permissions: [Permission!]!
-    cart: [CartItem!]!
     items: [Item]!
     votes: [Vote]!
 }
