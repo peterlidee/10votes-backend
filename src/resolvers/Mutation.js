@@ -148,19 +148,14 @@ const Mutations = {
             }
         }, info);
 
-        // after creating the item, update the itemCount of the location
-        const locationUpdate = await ctx.db.mutation.updateLocation({
-            where: { id: item.location.id },
-            data: { itemCount: item.location.items.length }
-        });
-
         return item;
 
     },
 
+    /*
     async createTag(parent, args, ctx, info){
         // only logged in people can create tags
-        //if(!ctx.request.userId) throw new Error('You must be logged in to do this');
+        if(!ctx.request.userId) throw new Error('You must be logged in to do this');
         const tag = await ctx.db.mutation.createTag({
             data: {
                 name: args.name,
@@ -170,7 +165,6 @@ const Mutations = {
         return tag;
     },
 
-    /*
     async createCountry(parent, args, ctx, info){
         const country = await ctx.db.mutation.createCountry({
             data: {
@@ -198,11 +192,21 @@ const Mutations = {
     },*/
 
     async updateItem(parent, args, ctx, info){
+        
         // you need to be logged in
         if(!ctx.request.userId) throw new Error('You need to be logged in for that');
-        // also, you need to own the item TODO!!!!!!
-        //console.log(ctx.user);
-        //if()
+
+        // check if they own the item or have permission to do this
+        const where = { id: args.id };
+        // 1. find the item
+        const currItem = await ctx.db.query.item({ where }, `{ id user { id } }`)
+        // check if they own item or have permissions
+        // do they own it or do they have the permission
+        const ownsItem = currItem.user.id === ctx.request.userId;
+        const hasPermissions = ctx.request.user.permissions.some(permission => ['ADMIN', 'ITEM_DELETE'].includes(permission));
+        if(!ownsItem && !hasPermissions){
+            throw new Error('You don\'t have permission to do that.')
+        }
         
 
         // construct the data variable
@@ -353,34 +357,6 @@ const Mutations = {
             }
         }, info );
 
-        // handle location (part 2) (handle it after the mutation)
-        // if the location changed, we need to update the itemCount on Location for the previous and the new locations
-        if(args.location){
-
-            // query old location
-            const oldLocation = await ctx.db.query.location({
-                where: {id: args.oldLocationId}
-            }, `{ items { id } }`);
-
-            // then update oldLocation itemCount
-            const updatedOldLocation = await ctx.db.mutation.updateLocation({
-                where: { id: args.oldLocationId },
-                data: { itemCount: oldLocation.items.length }
-            }, `{ id }`);
-
-            // query new location
-            const newLocation = await ctx.db.query.location({
-                where: {id: args.location}
-            }, `{ items { id } }`);
-
-            // then update newLocation itemCount
-            const updatedNewLocation = await ctx.db.mutation.updateLocation({
-                where: { id: args.location },
-                data: { itemCount: newLocation.items.length }
-            }, `{ id }`);
-
-        }
-
         return item;
 
     },
@@ -429,7 +405,7 @@ const Mutations = {
         return user;
     },
 
-    async signin(parent, {email, password}, ctx, info){
+    async login(parent, {email, password}, ctx, info){
         // 1. first check it there's a user with this email
         const user = await ctx.db.query.user({ where: {email} });
         if(!user){
@@ -449,7 +425,7 @@ const Mutations = {
         return user;
     },
 
-    signout(parent, args, ctx, info){
+    logout(parent, args, ctx, info){
         ctx.response.clearCookie('token');
         return { message: 'Goodbye!'};
     },
@@ -562,14 +538,19 @@ const Mutations = {
     },
 
     async deleteVote(parent, args, ctx, info){
-        console.log('args', args);
+        //console.log('args', args);
         // 1. is the user logged in?
         const userId = ctx.request.userId;
         if(!userId) throw new Error('You must be logged in');
 
         // 2. did they actually vote on this item?
-        const voteInVotes = ctx.request.user.votes.filter(vote => vote.id === args.voteId).length > 0;
-        if(!voteInVotes) throw new Error('You did not vote for this item');
+        // find out if the the voteId is also in my votes
+        const voteInMyVotes = ctx.request.user.votes.filter(vote => vote.id === args.voteId);
+        // if not throw error
+        if(!voteInMyVotes.length) throw new Error('You did not vote for this item.');
+        // we found a match in my votes, also check if the item ids correspond
+        // so the item we clicked on needs to correspond to the itemId of the vote in my votes
+        if(voteInMyVotes[0].item.id !== args.itemId) throw new Error('We couldn\'t find this item. Please refresh the page.');
 
         // 3. delete the vote
         const vote = await ctx.db.mutation.deleteVote({
@@ -578,7 +559,7 @@ const Mutations = {
 
         // 4. update item's voteCount
         // const vote returns vote > item > votes
-        const update = ctx.db.mutation.updateItem({
+        const update = await ctx.db.mutation.updateItem({
             where: { id: args.itemId },
             data: { voteCount: vote.item.votes.length }
         });
