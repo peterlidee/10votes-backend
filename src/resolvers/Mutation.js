@@ -365,6 +365,8 @@ const Mutations = {
         const where = { id: args.id };
         // 1. find the item
         const item = await ctx.db.query.item({ where }, `{ id user { id } votes{ id } }`)
+        if(!item) throw new Error('The item wasn\'t found.');
+
         // 2. check if they own item or have permissions
         // do they own it or do they have the permission
         const ownsItem = item.user.id === ctx.request.userId;
