@@ -28,8 +28,8 @@ server.express.use( async (req, res, next) =>  {
     if(!req.userId) return next();
     const user = await db.query.user(
         { where: { id: req.userId }},
-        '{ id, permissions, email, name, items {id}, votes {id item { id }} }'
-    );
+        '{ id, permissions, email, items {id}, votes {id item { id }} }'
+    ).catch(error => console.log(error));
     req.user = user;
     next();
 });
