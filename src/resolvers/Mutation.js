@@ -9,14 +9,43 @@ const slugify = require('slugify');
 const Mutations = {
 
     async createItem(parent, args, ctx, info){
-        // check if they are logged in
+        // check if the user islogged in
         if(!ctx.request.userId) throw new Error('You must be logged in to do that!');
 
         // 1. handle location
-        // check if there is one
-        if(!args.locationName) throw new Error('You need to enter a location!');
-
+        
+        // check if there is a location
+        if(!args.location) throw new Error('You need to enter a location!');
+        
+        // check it the location is a new one or an already existing one
         let locationArgs;
+        // does it exist?
+        const locationQuery = await ctx.db.query.locations({
+            where: {
+                name: args.location
+            }
+        });
+        // if the location exists, locationQuery[0] will be the result
+        if(locationQuery[0]){
+            locationArgs = {
+                connect: {
+                    id: locationQuery[0].id
+                }
+            }
+        }else{
+            // else, create a new location
+            // make a slug
+            const slug = slugify(args.locationName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+            locationArgs = {
+                create: {
+                    name: args.location,
+                    slug: slug,
+                    country: { connect: { name: "Belgium" }}
+                }
+            }
+        }
+
+        /*let locationArgs;
         // if there's a locationId, just connect it
         if(args.locationId){
             locationArgs = {
@@ -51,6 +80,7 @@ const Mutations = {
                 }
             }
         } // end handle location
+        */
         
         // 2. handle tags
         /*
@@ -66,6 +96,60 @@ const Mutations = {
             2.3 construct the variables for mutation
 
         */
+
+        /*
+            we get an array of max 3 strings
+            each item may be a new or existing tag
+        */
+
+       const tagsArgs = {};
+       
+        // 1. remove possible empty value
+        // 2. remove duplicates
+        const tags = [...new Set(args.tags.filter(tag => tag))];
+
+        // only when there are actually args
+        if(tags.length > 0){
+
+            // 3. query each of the args
+            const tagsQuery = await ctx.db.query.tags({
+                where: { name_in: tags }
+            });
+            
+            // now we have a search result
+            // 4. check for each of the names we have, if it yielded a result
+            const connectTagIDs = [];
+            const createTags = [];
+            tags.map(tag => {
+                // console.log('tag', tag);
+                // lowercase both to get real match
+                const match = tagsQuery.find(tagQuery => tagQuery.name.toLowerCase() === tag.toLowerCase());
+                if(match){
+                    // use the id to connect, not the name
+                    connectTagIDs.push(match.id)
+                }else{
+                    createTags.push(tag);
+                }
+            });
+    
+            // 5. construct the create and connect objects for the createItem > tag mutation
+
+            if(connectTagIDs[0]){ // if there are any
+                tagsArgs.connect = connectTagIDs.map(connectTagID => { return { id: connectTagID }});
+            }
+            if(createTags[0]){ // if there are any
+                tagsArgs.create = createTags.map(createTag => {
+                    const slug = slugify(createTag, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+                    return { name: createTag, slug: slug }
+                });
+            }
+        }
+        
+        
+
+        /*
+
+
         const tagsArgs = {};
 
         if(args.tagNames){
@@ -134,6 +218,8 @@ const Mutations = {
                 });
             }
         }
+
+        */
 
         // DO the mutation
         const item = await ctx.db.mutation.createItem({
@@ -456,7 +542,7 @@ const Mutations = {
 
     async resetPassword(parent, args, ctx, info){
         // 1. check if the passwords match
-        if(args.password !== args.confirmPassword) throw new Error('Passwords don not match');
+        if(args.password !== args.confirmPassword) throw new Error('Passwords didn\'t match.');
         // 2. check if it's a legit resettoken
         const [user] = await ctx.db.query.users({ 
             where: { 
@@ -464,7 +550,7 @@ const Mutations = {
                 resetTokenExpiry_gte: Date.now() - 3600000,
             } 
         });
-        if(!user) throw new Error('The resettoken is invalid or has expired');
+        if(!user) throw new Error('The resettoken is invalid or has expired.');
         // 4. hash their new password
         const password = await bcrypt.hash(args.password, 10);
         // 5. save the new password to the user and remove the token fields
