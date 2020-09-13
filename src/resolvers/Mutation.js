@@ -35,7 +35,7 @@ const Mutations = {
         }else{
             // else, create a new location
             // make a slug
-            const slug = slugify(args.locationName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+            const slug = slugify(args.location, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
             locationArgs = {
                 create: {
                     name: args.location,
@@ -44,58 +44,8 @@ const Mutations = {
                 }
             }
         }
-
-        /*let locationArgs;
-        // if there's a locationId, just connect it
-        if(args.locationId){
-            locationArgs = {
-                connect: { id: args.locationId }
-            }
-        }else{
-            // there's no locationId
-            // either the location doesn't exist yet, or wasn't selected
-            // does it exist?
-            const locationQuery = await ctx.db.query.locations({
-                where: {
-                    name: args.locationName
-                }
-            });
-            // if the location exists, locationQuery[0] will be the result
-            if(locationQuery[0]){
-                locationArgs = {
-                    connect: {
-                        id: locationQuery[0].id
-                    }
-                }
-            }else{
-                // else, create a new location
-                // make a slug
-                const slug = slugify(args.locationName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
-                locationArgs = {
-                    create: {
-                        name: args.locationName,
-                        slug: slug,
-                        country: { connect: { name: "Belgium" }}
-                    }
-                }
-            }
-        } // end handle location
-        */
         
         // 2. handle tags
-        /*
-
-            we get 2 possible arrays
-            tagNames and tagIds
-            
-            2.1 we start by removing duplicates from tagNames
-            if one of the duplicates has an id, keep that one
-
-            2.2 for each tag with no id, check if it already exists (then connect) or not (then create) by a query
-
-            2.3 construct the variables for mutation
-
-        */
 
         /*
             we get an array of max 3 strings
@@ -144,82 +94,6 @@ const Mutations = {
                 });
             }
         }
-        
-        
-
-        /*
-
-
-        const tagsArgs = {};
-
-        if(args.tagNames){
-
-            // 2.1 remove duplicates
-            const uniqueTagNames = [];
-            const uniqueTagIds = [];
-            args.tagNames.map((tagName, i) => {
-                const duplicateIndex = uniqueTagNames.findIndex(uniqueTagName => uniqueTagName.trim().toLowerCase() === tagName.trim().toLowerCase());
-
-                if(duplicateIndex >= 0){ // there is a duplicate
-                    // does the one already in uniqueTagNames have a corresponding id in uniqueTagIds that is not empty?
-                    if(uniqueTagIds[duplicateIndex]){ // has ID
-                        // do nothing, the uniqueTag has an id
-                    }else{ // no ID
-                        // the uniqueTag duplicate does not have an id
-                        // overwrite the id of the uniqueTag with that of the current one
-                        // if the current one has id, good; if not still empty, no harm done
-                        uniqueTagIds[duplicateIndex] = args.tagIds[i];
-                    }
-                }else{ // no duplicate, so add it
-                    uniqueTagNames.push(tagName);
-                    uniqueTagIds.push(args.tagIds[i]);
-                }
-            });
-
-            // 2.2 split the tags into tag that we know exist and tags we need to query
-
-            const connectTags = []; // takes ids (these tags came with an ID)
-            const noIdTags = []; // takes names from tags with no ids (we will need to query these)
-            const createTags = []; // takes names (these will hold tags that yielded no search results)
-            // check for ids on unduplicated tags
-            uniqueTagIds.map((uniqueTagId, i) => {
-                if(uniqueTagId){ // has id, push it to connectTags
-                    connectTags.push(uniqueTagId)
-                }else{ // no id, push it to noIdTags
-                    noIdTags.push(uniqueTagNames[i]);
-                }
-            });
-
-            // take the tags that don't have an id and query them to see if they exist
-            const tagsQuery = await ctx.db.query.tags({
-                where: { name_in: noIdTags }
-            });
-
-            // now we have a search result
-            // check for each of the names we have, if it yielded a result
-            noIdTags.map(noIdTag => {
-                // console.log('the tag', noIdTag);
-                const match = tagsQuery.find(tagQuery => tagQuery.name.toLowerCase() === noIdTag.toLowerCase());
-                if(match){
-                    connectTags.push(match.id)
-                }else{
-                    createTags.push(noIdTag);
-                }
-            });
-
-            // 2.3 construct the create and connect objects for the createItem > tag mutation
-            if(connectTags[0]){
-                tagsArgs.connect = connectTags.map(connectTag => { return { id: connectTag }});
-            }
-            if(createTags[0]){
-                tagsArgs.create = createTags.map(createTag => {
-                    const slug = slugify(createTag, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
-                    return { name: createTag, slug: slug }
-                });
-            }
-        }
-
-        */
 
         // DO the mutation
         const item = await ctx.db.mutation.createItem({
@@ -280,162 +154,124 @@ const Mutations = {
     async updateItem(parent, args, ctx, info){
         
         // you need to be logged in
-        if(!ctx.request.userId) throw new Error('You need to be logged in for that');
+        if(!ctx.request.userId) throw new Error('You need to be logged.');
 
-        // check if they own the item or have permission to do this
-        const where = { id: args.id };
-        // 1. find the item
-        const currItem = await ctx.db.query.item({ where }, `{ id user { id } }`)
-        // check if they own item or have permissions
-        // do they own it or do they have the permission
-        const ownsItem = currItem.user.id === ctx.request.userId;
+        // check if this item (args.id) is inside the users items (ctx.request.user)
+        const ownsItem = ctx.request.user.items.find(item => item.id === args.id);
+        // check if the user has permission to do this
         const hasPermissions = ctx.request.user.permissions.some(permission => ['ADMIN', 'ITEM_DELETE'].includes(permission));
         if(!ownsItem && !hasPermissions){
             throw new Error('You don\'t have permission to do that.')
-        }
-        
+        }        
 
         // construct the data variable
         let data = {};
 
         // 1. handle location
-        // if there's a locationName (meaning it changed) add the location to the mutation
-        if(args.locationName){
-            // if there's a locationId, just connect it
-            if(args.locationId){
+        // if there's a new location
+        if(args.location){
+            // does the new location already exist (is it in db?)
+            const locationQuery = await ctx.db.query.locations({
+                where: {
+                    name: args.location
+                }
+            });
+            // if the location exists, locationQuery[0] will be the result
+            if(locationQuery[0]){
                 data.location = {
-                    connect: { id: args.locationId }
-                }  
-            }else{ // no locationId
-                // either the location doesn't exist yet, or wasn't selected
-                // does it exist?
-                const locationQuery = await ctx.db.query.locations({
-                    where: {
-                        name: args.locationName
-                    }
-                });
-                // if the location exists, locationQuery[0] will be the result
-                if(locationQuery[0]){
-                    data.location = {
-                        connect: {
-                            id: locationQuery[0].id
-                        }
-                    }
-                }else{
-                    // else (no results), create a new location
-                    // create slug first
-                    const slug = slugify(args.locationName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
-                    data.location = {
-                        create: {
-                            name: args.locationName,
-                            slug: slug,
-                            country: { connect: { name: "Belgium" }}
-                        }
+                    connect: {
+                        id: locationQuery[0].id
                     }
                 }
-            }          
-        } // end handle location
+            }else{
+                // else (no results), create a new location
+                // create slug first
+                const slug = slugify(args.location, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+                data.location = {
+                    create: {
+                        name: args.location,
+                        slug: slug,
+                        country: { connect: { name: "Belgium" }}
+                    }
+                }
+            }       
+        }  // else, no changes were made, don't do anything
+        // end handle location
+
 
         // 2. handle tags
-        if(args.tagNames){
 
-            /*
+        // only do stuff when there were changes to the tags
+        if(args.newTagNames){
 
-                we get 3 possible arrays
-                tagNames, tagIds and oldTags
-                
-                2.1 we start by removing duplicates from tagNames
-                if one of the duplicates has an id, keep that one
+            const { newTagNames, oldTagNames } = args;
+            const tagsToConnect = [];
+            const tagsToCreate = [];
+            const tagsToDisconnect = [];
 
-                2.2 for each tag with no id, check if it already exists (then connect) or not (then create) by a query
-                
-                2.3 if there are oldTags and if there are tags both in tagNames and in oldTags, remove them from both 
-                (don't add and delete the same tag!)
-                
-                2.4 lastly find out which tags are to be deleted
-
-            */
-
-            // 2.1 remove duplicates
-
-            const uniqueTagNames = [];
-            const uniqueTagIds = [];
-            args.tagNames.map((tagName, i) => {
-                const duplicateIndex = uniqueTagNames.findIndex(uniqueTagName => uniqueTagName.trim().toLowerCase() === tagName.trim().toLowerCase());
-
-                if(duplicateIndex >= 0){ // there is a duplicate
-                    // does the one already in uniqueTagNames have a corresponding id in uniqueTagIds that is not empty?
-                    if(uniqueTagIds[duplicateIndex]){ // has ID
-                        // do nothing, the uniqueTag has an id
-                    }else{ // no ID
-                        // the uniqueTag duplicate does not have an id
-                        // overwrite the id of the uniqueTag with that of the current one
-                        // if the current one has id, good; if not still empty, no harm done
-                        uniqueTagIds[duplicateIndex] = args.tagIds[i];
+            // first check which tags are to be disconnected:
+            // an oldTag is to be removed when it's not in newTags
+            if(oldTagNames){
+                oldTagNames.map((oldTagName, i) => {
+                    if(!newTagNames.find(newTagName => newTagName.toLowerCase() == oldTagName.toLowerCase())){
+                        tagsToDisconnect.push(args.oldTagIds[i]);
                     }
-                }else{ // no duplicate, so add it
-                    uniqueTagNames.push(tagName);
-                    uniqueTagIds.push(args.tagIds[i]);
-                }
-            });
-
-            // 2.2 split the tags into tag that we know exist and tags we need to query
-
-            let connectTags = []; // takes ids (these tags came with an ID)
-            const noIdTags = []; // takes names from tags with no ids (we will need to query these)
-            const createTags = []; // takes names (these will hold tags that yielded no search results)
-            let disconnectTags = []; // takes ids (tags to be disconnected)
-            // check for ids on unduplicated tags
-            uniqueTagIds.map((uniqueTagId, i) => {
-                if(uniqueTagId){ // has id, push it to connectTags
-                    connectTags.push(uniqueTagId)
-                }else{ // no id, push it to noIdTags
-                    noIdTags.push(uniqueTagNames[i]);
-                }
-            });
-            // take the tags that don't have an id and query them to see if they exist
-            const tagsQuery = await ctx.db.query.tags({
-                where: { name_in: noIdTags }
-            });
-            // now we have a search result
-            // check for each of the names we have, if it yielded a result
-            noIdTags.map(noIdTag => {
-                const match = tagsQuery.find(tagQuery => tagQuery.name.toLowerCase() === noIdTag);
-                if(match){
-                    connectTags.push(match.id)
-                }else{
-                    createTags.push(noIdTag);
-                }
-            });
-
-            // 2.3 remove tags that are to be added and disconnect if there are oldtags
-
-            if(args.oldTagIds){
-                // find tag ids that are both in connectTags and oldTags
-                const redundantTags = connectTags.filter(connectTag => args.oldTagIds.includes(connectTag));
-                // remove them from both
-                connectTags = connectTags.filter(connectTag => !redundantTags.includes(connectTag));
-                disconnectTags = args.oldTagIds.filter(oldTagId => !redundantTags.includes(oldTagId));
-            }
-
-            // 2.4 construct the create, connect and delete objects for the createItem > tag mutation
-
-            data.tags = {};
-            if(connectTags[0]){
-                data.tags.connect = connectTags.map(connectTag => { return { id: connectTag }});
-            }
-            if(createTags[0]){
-                data.tags.create = createTags.map(createTag => {
-                    const slug = slugify(createTag, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
-                    return { name: createTag, slug: slug }
                 });
             }
-            if(disconnectTags[0]){
-                data.tags.disconnect = disconnectTags.map(disconnectTag => { return { id: disconnectTag }});
-            }
-        }
+            //console.log('tagsToDisconnect', tagsToDisconnect);
 
-        // run the update method
+            // now check wich tags are to be added
+            const cleanedTags = 
+                [...new Set(newTagNames)] // remove the duplicates
+                    .filter(newTagName => {
+                        // remove the empties
+                        if(!newTagName) return false;
+                        // remove the items that are in oldTagNames if there are oldTagNames
+                        if(oldTagNames && oldTagNames.find(oldTagName => oldTagName.toLowerCase() == newTagName.toLowerCase())) return false;
+                        // return the rest
+                        return true;
+                    }
+            );
+
+            // now, this leaves us with a list of tags
+            // we need to figure out which of these tags already exist and which are to be created
+            const tagsQuery = await ctx.db.query.tags({
+                where: { name_in: cleanedTags }
+            });
+
+            // now we have a search result
+            // check for each of the names we have, if it yielded a result
+            if(cleanedTags.length){
+                cleanedTags.map(cleanedTag => {
+                    const match = tagsQuery.find(tagQuery => tagQuery.name.toLowerCase() === cleanedTag.toLowerCase());
+                    if(match){
+                        tagsToConnect.push(match.id)
+                    }else{
+                        tagsToCreate.push(cleanedTag);
+                    }
+                });
+            }
+
+            // now for the final step
+            // create variables and add tagsTo connect, disconnect and create if needed
+
+            data.tags = {};
+            if(tagsToConnect.length){
+                data.tags.connect = tagsToConnect.map(tagToConnect => { return { id: tagToConnect }});
+            }
+            if(tagsToCreate.length){
+                data.tags.create = tagsToCreate.map(tagToCreate => {
+                    const slug = slugify(tagToCreate, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+                    return { name: tagToCreate, slug: slug }
+                });
+            }
+            if(tagsToDisconnect.length){
+                data.tags.disconnect = tagsToDisconnect.map(tagToDisconnect => { return { id: tagToDisconnect }});
+            }
+
+        }// else, no changes to tags
+
+        // 3. run the update method
         const item = await ctx.db.mutation.updateItem({
             data: data,
             where: {
@@ -444,7 +280,6 @@ const Mutations = {
         }, info );
 
         return item;
-
     },
 
     async deleteItem(parent, args, ctx, info){
