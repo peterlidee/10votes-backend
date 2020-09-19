@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 const { transport, makeANiceEmail } = require('../mail');
-const { hasPermission } = require('../utils');
+const { hasPermission, removeDuplicates } = require('../utils');
 const slugify = require('slugify');
 
 const Mutations = {
@@ -56,7 +56,7 @@ const Mutations = {
        
         // 1. remove possible empty value
         // 2. remove duplicates
-        const tags = [...new Set(args.tags.filter(tag => tag))];
+        const tags = removeDuplicates(args.tags).filter(tag => tag)
 
         // only when there are actually args
         if(tags.length > 0){
@@ -221,17 +221,19 @@ const Mutations = {
             //console.log('tagsToDisconnect', tagsToDisconnect);
 
             // now check wich tags are to be added
-            const cleanedTags = 
-                [...new Set(newTagNames)] // remove the duplicates
-                    .filter(newTagName => {
-                        // remove the empties
-                        if(!newTagName) return false;
-                        // remove the items that are in oldTagNames if there are oldTagNames
-                        if(oldTagNames && oldTagNames.find(oldTagName => oldTagName.toLowerCase() == newTagName.toLowerCase())) return false;
-                        // return the rest
-                        return true;
-                    }
+            const cleanedTags = removeDuplicates(newTagNames)
+                //[...new Set(newTagNames)] // remove the duplicates
+                .filter(newTagName => {
+                    // remove the empties
+                    if(!newTagName) return false;
+                    // remove the items that are in oldTagNames if there are oldTagNames
+                    if(oldTagNames && oldTagNames.find(oldTagName => oldTagName.toLowerCase() == newTagName.toLowerCase())) return false;
+                    // return the rest
+                    return true;
+                }
             );
+
+            // console.log('cleaned tags', cleanedTags)
 
             // now, this leaves us with a list of tags
             // we need to figure out which of these tags already exist and which are to be created
@@ -270,6 +272,8 @@ const Mutations = {
             }
 
         }// else, no changes to tags
+
+        // console.log('data variables', data);
 
         // 3. run the update method
         const item = await ctx.db.mutation.updateItem({

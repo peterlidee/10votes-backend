@@ -15,3 +15,18 @@ function hasPermission(user, permissionsNeeded) {
 }
 
 exports.hasPermission = hasPermission;
+
+// remove duplicates from an array (also inlude lower and uppercase cases, so we can't use set)
+// whitespaces where removed already!
+function removeDuplicates(array){
+  const newArray = [];
+  array.map(item => {
+      const check = newArray.find(newItem => newItem.toLowerCase() == item.toLowerCase());
+      if(!check){
+          newArray.push(item)
+      }
+  })
+  return newArray;
+}
+
+exports.removeDuplicates = removeDuplicates;
