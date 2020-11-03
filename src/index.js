@@ -37,8 +37,9 @@ server.express.use( async (req, res, next) =>  {
 
 // start server
 
-console.log('backend, wth is process.env', process.env)
-console.log('backend, wth is FRONTEND_URL', process.env.FRONTEND_URL)
+console.log('what is process.env NODE ENV?', process.env.NODE_ENV);
+console.log('backend, wth is process.env', process.env)                 // TODO
+console.log('backend, wth is FRONTEND_URL', process.env.FRONTEND_URL) // TODO
 
 server.start(
 {
