@@ -36,6 +36,10 @@ server.express.use( async (req, res, next) =>  {
 });
 
 // start server
+
+console.log('backend, wth is process.env', process.env)
+console.log('backend, wth is FRONTEND_URL', process.env.FRONTEND_URL)
+
 server.start(
 {
     cors:  {
