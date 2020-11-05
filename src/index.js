@@ -1,17 +1,33 @@
-// const { Prisma } = require('prisma-binding');
+// 1. set up DB
+
+const { Prisma } = require('prisma-binding');
+require('dotenv').config({ path: 'variables.env' });
+
+const db = new Prisma({
+    typeDefs: './src/generated/prisma.graphql',
+    endpoint: process.env.PRISMA_ENDPOINT,
+    secret: process.env.PRISMA_SECRET,
+    debug: false
+});
+
+
+
+
 const { ApolloServer } = require('apollo-server-express');
-const express = require('express');
-const cors = require('cors');
 const { importSchema } = require('graphql-import');
+
+//const express = require('express');
+//const cors = require('cors');
 
 // const cookieParser = require('cookie-parser');
 // const jwt = require('jsonwebtoken');
 // require('dotenv').config();
 
-const typeDefs = importSchema('./schema.graphql');
+const typeDefs = importSchema('./src/schema.graphql');
 const Query = require('./resolvers/Query.js');
 const Mutation = require('./resolvers/Mutation.js');
-const db = require('./db');
+//const db = require('./db');
+
 
 const server = new ApolloServer({
     typeDefs,
