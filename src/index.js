@@ -41,7 +41,10 @@ const server = new ApolloServer({
         }
     },
     resolverValidationOptions: { requireResolversForResolveType: false },
-    context: req => ({ ...req, db }),
+    context: req => {
+        //console.log('what is req?', req);
+        return ({ ...req, db })
+    }
 });
 
 // app.listen({ port: 4000 }, () =>
@@ -49,6 +52,12 @@ const server = new ApolloServer({
 // );
 
 const app = express();
+
+app.use((req, res, next) => {
+    req.teeeeeeeeeeeeeeest = 'yo!';
+    next();
+});
+
 server.applyMiddleware({ app });
  
 app.listen({ port: 4000 }, () =>
