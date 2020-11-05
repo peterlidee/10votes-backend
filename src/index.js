@@ -35,6 +35,7 @@ const server = new ApolloServer({
         Mutation,
         Query
     },
+    resolverValidationOptions: { requireResolversForResolveType: false },
     context: req => ({ ...req, db }),
 });
 
