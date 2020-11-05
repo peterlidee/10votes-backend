@@ -2,16 +2,15 @@
 const { ApolloServer } = require('apollo-server-express');
 const express = require('express');
 const cors = require('cors');
-
-//const { importSchema } = require('graphql-import');
+const { importSchema } = require('graphql-import');
 
 // const cookieParser = require('cookie-parser');
 // const jwt = require('jsonwebtoken');
 // require('dotenv').config();
 
-const typeDefs = importSchema('./src/schema.graphql');
-const Query = require('./src/resolvers/Query');
-const Mutation = require('./src/resolvers/Mutation');
+const typeDefs = importSchema('./schema.graphql');
+const Query = require('./resolvers/Query.js');
+const Mutation = require('./resolvers/Mutation.js');
 const db = require('./db');
 
 const server = new ApolloServer({
@@ -22,6 +21,10 @@ const server = new ApolloServer({
     },
     context: req => ({ ...req, db }),
 });
+
+// app.listen({ port: 4000 }, () =>
+//   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+// );
 
 
 
