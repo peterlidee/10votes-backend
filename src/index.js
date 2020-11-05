@@ -16,7 +16,7 @@ const db = new Prisma({
 const { ApolloServer } = require('apollo-server-express');
 const { importSchema } = require('graphql-import');
 
-//const express = require('express');
+const express = require('express');
 //const cors = require('cors');
 
 // const cookieParser = require('cookie-parser');
@@ -33,7 +33,12 @@ const server = new ApolloServer({
     typeDefs,
     resolvers: {
         Mutation,
-        Query
+        Query,
+        Node: {
+            __resolveType() {
+                return null
+            }
+        }
     },
     resolverValidationOptions: { requireResolversForResolveType: false },
     context: req => ({ ...req, db }),
@@ -42,6 +47,13 @@ const server = new ApolloServer({
 // app.listen({ port: 4000 }, () =>
 //   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
 // );
+
+const app = express();
+server.applyMiddleware({ app });
+ 
+app.listen({ port: 4000 }, () =>
+  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+);
 
 
 

@@ -9,12 +9,7 @@ function createServer(){
         typeDefs: 'src/schema.graphql',
         resolvers: {
             Mutation,
-            Query,
-            Node: {
-                __resolveType() {
-                    return null
-                }
-            }
+            Query  
         },
         resolverValidationOptions: {
             requireResolversForResolveType: false
