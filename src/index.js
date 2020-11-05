@@ -9,6 +9,20 @@ const cors = require('cors');
 // const jwt = require('jsonwebtoken');
 // require('dotenv').config();
 
+const typeDefs = importSchema('./src/schema.graphql');
+const Query = require('./src/resolvers/Query');
+const Mutation = require('./src/resolvers/Mutation');
+const db = require('./db');
+
+const server = new ApolloServer({
+    typeDefs,
+    resolvers: {
+        Mutation,
+        Query
+    },
+    context: req => ({ ...req, db }),
+});
+
 
 
 
