@@ -18,6 +18,7 @@ const Query = {
     },
     
     async users(parent, args, ctx, info){
+        console.log('what is ctx?', ctx)
         // are the logged in?
         if(!ctx.request.userId) throw new Error('You need to be logged in');
         // check if the user has the permission to query all the permissions
