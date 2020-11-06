@@ -1,41 +1,15 @@
 require('dotenv').config({ path: 'variables.env' });
-const db = require('./db');
-
-
-
-
-const { ApolloServer } = require('apollo-server-express');
-// TODO, other one
-const { importSchema } = require('graphql-import');
-
+const db = require('./db'); // cause we make db request in middleware to populate user
+const server = createServer();
 const express = require('express');
 const cors = require('cors');
-
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-// require('dotenv').config();
 
-const typeDefs = importSchema('./src/schema.graphql');
-const Query = require('./resolvers/Query.js');
-const Mutation = require('./resolvers/Mutation.js');
+// make the apolloServer
+const createServer = require('./createServer');
 
-
-const server = new ApolloServer({
-    typeDefs,
-    resolvers: {
-        Mutation,
-        Query,
-        Node: {
-            __resolveType() {
-                return null
-            }
-        }
-    },
-    resolverValidationOptions: { requireResolversForResolveType: false },
-    context: req => ({ ...req, db })
-});
-
-
+// make the express server
 const app = express();
 
 // add the middleware
@@ -46,12 +20,6 @@ var corsOptions = {
     credentials: true // <-- REQUIRED backend setting
 };
 app.use(cors(corsOptions));
-
-//remove
-app.use((req, res, next) => {
-    req.teeeeeeeeeeeeeeest = 'yo!';
-    next();
-});
 
 app.use(cookieParser());
 // middleware: decode the jwt so we can get the user ID on each request
