@@ -1,32 +1,23 @@
-// 1. set up DB
-
-const { Prisma } = require('prisma-binding');
 require('dotenv').config({ path: 'variables.env' });
-
-const db = new Prisma({
-    typeDefs: './src/generated/prisma.graphql',
-    endpoint: process.env.PRISMA_ENDPOINT,
-    secret: process.env.PRISMA_SECRET,
-    debug: false
-});
+const db = require('./db');
 
 
 
 
 const { ApolloServer } = require('apollo-server-express');
+// TODO, other one
 const { importSchema } = require('graphql-import');
 
 const express = require('express');
-//const cors = require('cors');
+const cors = require('cors');
 
-// const cookieParser = require('cookie-parser');
-// const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 // require('dotenv').config();
 
 const typeDefs = importSchema('./src/schema.graphql');
 const Query = require('./resolvers/Query.js');
 const Mutation = require('./resolvers/Mutation.js');
-//const db = require('./db');
 
 
 const server = new ApolloServer({
@@ -41,27 +32,60 @@ const server = new ApolloServer({
         }
     },
     resolverValidationOptions: { requireResolversForResolveType: false },
-    context: req => {
-        //console.log('what is req?', req);
-        return ({ ...req, db })
-    }
+    context: req => ({ ...req, db })
 });
 
-// app.listen({ port: 4000 }, () =>
-//   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
-// );
 
 const app = express();
 
+// add the middleware
+
+// set cors
+var corsOptions = {
+    origin: process.env.FRONTEND_URL,
+    credentials: true // <-- REQUIRED backend setting
+};
+app.use(cors(corsOptions));
+
+//remove
 app.use((req, res, next) => {
     req.teeeeeeeeeeeeeeest = 'yo!';
     next();
 });
 
-server.applyMiddleware({ app });
+app.use(cookieParser());
+// middleware: decode the jwt so we can get the user ID on each request
+app.use((req, res, next) => {
+    // pull the token out of the req
+    const { token } = req.cookies;
+    if (token) {
+        const { userId } = jwt.verify(token, process.env.APP_SECRET);
+        // put the userID on req for further requests to access
+        req.userId = userId;
+    }
+    next();
+});
+
+// middleware: create a middleware that populates the user on each request
+app.use(async (req, res, next) => {
+    // if they aren't logged in, skip this
+    if (!req.userId) return next();
+    const user = await db.query.user(
+      { where: { id: req.userId } },
+      '{ id, permissions, email, items {id}, votes {id item { id }} }'
+    ).catch(error => console.log(error));
+    req.user = user;
+    next();
+});
+
+server.applyMiddleware({
+    app,
+    path: '/',
+    cors: false, // disables the apollo-server-express cors to allow the cors middleware use
+})
  
-app.listen({ port: 4000 }, () =>
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+app.listen({ port: 4444 }, () =>
+  console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
 );
 
 
