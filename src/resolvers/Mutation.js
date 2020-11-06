@@ -10,7 +10,7 @@ const Mutations = {
 
     async createItem(parent, args, ctx, info){
         // check if the user islogged in
-        if(!ctx.request.userId) throw new Error('You must be logged in to do that!');
+        if(!ctx.req.userId) throw new Error('You must be logged in to do that!');
 
         // 1. handle location
         
@@ -101,7 +101,7 @@ const Mutations = {
                 image: args.image,
                 largeImage: args.largeImage,
                 // this is how we create a relationship between the item and the user
-                user: { connect: { id: ctx.request.userId }},
+                user: { connect: { id: ctx.req.userId }},
                 location: locationArgs,
                 tags: tagsArgs,
                 voteCount: 0,
@@ -115,7 +115,7 @@ const Mutations = {
     /*
     async createTag(parent, args, ctx, info){
         // only logged in people can create tags
-        if(!ctx.request.userId) throw new Error('You must be logged in to do this');
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
         const tag = await ctx.db.mutation.createTag({
             data: {
                 name: args.name,
@@ -154,12 +154,12 @@ const Mutations = {
     async updateItem(parent, args, ctx, info){
         
         // you need to be logged in
-        if(!ctx.request.userId) throw new Error('You need to be logged.');
+        if(!ctx.req.userId) throw new Error('You need to be logged.');
 
-        // check if this item (args.id) is inside the users items (ctx.request.user)
-        const ownsItem = ctx.request.user.items.find(item => item.id === args.id);
+        // check if this item (args.id) is inside the users items (ctx.req.user)
+        const ownsItem = ctx.req.user.items.find(item => item.id === args.id);
         // check if the user has permission to do this
-        const hasPermissions = ctx.request.user.permissions.some(permission => ['ADMIN', 'ITEM_DELETE'].includes(permission));
+        const hasPermissions = ctx.req.user.permissions.some(permission => ['ADMIN', 'ITEM_DELETE'].includes(permission));
         if(!ownsItem && !hasPermissions){
             throw new Error('You don\'t have permission to do that.')
         }        
@@ -294,8 +294,8 @@ const Mutations = {
 
         // 2. check if they own item or have permissions
         // do they own it or do they have the permission
-        const ownsItem = item.user.id === ctx.request.userId;
-        const hasPermissions = ctx.request.user.permissions.some(permission => ['ADMIN', 'ITEM_DELETE'].includes(permission));
+        const ownsItem = item.user.id === ctx.req.userId;
+        const hasPermissions = ctx.req.user.permissions.some(permission => ['ADMIN', 'ITEM_DELETE'].includes(permission));
         if(!ownsItem && !hasPermissions){
             throw new Error('You don\'t have permission to do that.')
         }
@@ -415,10 +415,10 @@ const Mutations = {
 
     async updatePermissions(parent, args, ctx, info){
         // 1. are they logged in
-        if(!ctx.request.userId) throw new Error('Must be logged in!');
+        if(!ctx.req.userId) throw new Error('Must be logged in!');
         // 2. query current user
         const currentUser = await ctx.db.query.user({
-            where: { id: ctx.request.userId } 
+            where: { id: ctx.req.userId } 
         }, info)
         // 3. check if they have permission to do this
         hasPermission(currentUser, ['ADMIN', 'PERMISSIONUPDATE']);
@@ -431,18 +431,18 @@ const Mutations = {
 
     async castVote(parent, args, ctx, info){
         // 1. is the user logged in?
-        const userId = ctx.request.userId;
+        const userId = ctx.req.userId;
         if(!userId) throw new Error('You must be logged in');
 
         // 2. do they have votes left? TODO
-        if(ctx.request.user.votes.length >= 10) throw new Error('You have no votes left');
+        if(ctx.req.user.votes.length >= 10) throw new Error('You have no votes left');
 
         // 3. only one vote per item!!
-        const itemInVotes = ctx.request.user.votes.filter(vote => vote.item.id === args.itemId).length > 0;
+        const itemInVotes = ctx.req.user.votes.filter(vote => vote.item.id === args.itemId).length > 0;
         if(itemInVotes) throw new Error('You already voted for this item');
 
         // 4. don't allow votes in own items
-        const itemInOwnItems = ctx.request.user.items.filter(item => item.id === args.itemId).length > 0;
+        const itemInOwnItems = ctx.req.user.items.filter(item => item.id === args.itemId).length > 0;
         if(itemInOwnItems) throw new Error('Voting on your own pictures leads to the dark side.')
 
         // 5. cast the vote
@@ -466,12 +466,12 @@ const Mutations = {
     async deleteVote(parent, args, ctx, info){
         //console.log('args', args);
         // 1. is the user logged in?
-        const userId = ctx.request.userId;
+        const userId = ctx.req.userId;
         if(!userId) throw new Error('You must be logged in');
 
         // 2. did they actually vote on this item?
         // find out if the the voteId is also in my votes
-        const voteInMyVotes = ctx.request.user.votes.filter(vote => vote.id === args.voteId);
+        const voteInMyVotes = ctx.req.user.votes.filter(vote => vote.id === args.voteId);
         // if not throw error
         if(!voteInMyVotes.length) throw new Error('You did not vote for this item.');
         // we found a match in my votes, also check if the item ids correspond

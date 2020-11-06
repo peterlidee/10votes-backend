@@ -9,11 +9,11 @@ const Query = {
     
     async me(parent, args, ctx, info){
         // check if there is a current user id
-        if(!ctx.request.userId){
+        if(!ctx.req.userId){
             return null;
         }
         return ctx.db.query.user({
-            where: { id: ctx.request.userId },
+            where: { id: ctx.req.userId },
         }, info);
     },
     
@@ -22,7 +22,7 @@ const Query = {
         // are the logged in?
         if(!ctx.req.userId) throw new Error('You need to be logged in');
         // check if the user has the permission to query all the permissions
-        hasPermission(ctx.request.user, ['ADMIN', 'PERMISSIONUPDATE']);
+        hasPermission(ctx.req.user, ['ADMIN', 'PERMISSIONUPDATE']);
         // if they do, query all the users
         return ctx.db.query.users({}, info);
     },
