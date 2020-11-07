@@ -1,13 +1,13 @@
 require('dotenv').config({ path: 'variables.env' });
 const db = require('./db'); // cause we make db request in middleware to populate user
-const server = createServer();
+const createServer = require('./createServer');
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
 // make the apolloServer
-const createServer = require('./createServer');
+const server = createServer();
 
 // make the express server
 const app = express();

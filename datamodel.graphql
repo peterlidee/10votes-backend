@@ -6,7 +6,6 @@ enum Permission{
   ITEMDELETE
   PERMISSIONUPDATE
 }
-
 type User {
   id: ID! @id
   email: String! @unique
@@ -29,19 +28,16 @@ type Item {
   votes: [Vote]! @relation(name: "ItemToVote", onDelete: CASCADE)
   voteCount: Int @default(value: 0)
 }
-
 type Tag {
   id: ID! @id
   name: String! @unique
   slug: String! @unique
 }
-
 type Country {
   id: ID! @id
   name: String! @unique
   countryCode: String! @unique
 }
-
 type Location {
   id: ID! @id
   name: String!
@@ -49,7 +45,6 @@ type Location {
   country: Country!
   items: [Item]!
 }
-
 type Vote {
   id: ID! @id
   item: Item! @relation(name: "ItemToVote", onDelete: SET_NULL)
