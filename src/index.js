@@ -52,9 +52,14 @@ server.applyMiddleware({
     cors: false, // disables the apollo-server-express cors to allow the cors middleware use
 })
  
-app.listen({ port: 4444 }, () =>
-  console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
-);
+// app.listen({ port: 4444 }, () =>
+//   console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
+// );
+
+const PORT = process.env.PORT || 4444;
+app.listen(PORT, () => {
+    console.log(`Our app is running on port ${ PORT }`);
+});
 
 
 
