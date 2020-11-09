@@ -56,14 +56,15 @@ server.applyMiddleware({
 //   console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
 // );
 
-// const PORT = process.env.PORT || 4444;
-// app.listen(PORT, () => {
-//     console.log(`Our app is running on port ${ PORT }`);
-// });
-
-server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
-    console.log(`🚀 Server ready at ${url}`);
+const PORT = process.env.PORT || 4444;
+app.listen({ port: process.env.PORT || 4000 }, () => {
+    console.log(`Our app is running on port ${ PORT }`);
+    console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
 });
+
+// server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
+//     console.log(`🚀 Server ready at ${url}`);
+// });
 
 
 
