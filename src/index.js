@@ -49,7 +49,7 @@ app.use(async (req, res, next) => {
 
 server.applyMiddleware({
     app,
-    //path: '/',
+    path: '/', // keep this it will become https://tenvotes-yoga-prod.herokuapp.com/graphql
     cors: false, // disables the apollo-server-express cors to allow the cors middleware use
 })
  
@@ -58,8 +58,9 @@ server.applyMiddleware({
 // );
 
 app.listen({ port: process.env.PORT || 4000 }, () => {
-    console.log(`Our app is running on port ${ PORT }`);
-    console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
+    //process.env.PORT && console.log(`Our app is running on port ${ PORT }`);
+    !process.env.PORT && console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
+    process.env.PORT && console.log('server ready??')
 });
 
 // server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
