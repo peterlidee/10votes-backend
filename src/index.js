@@ -17,6 +17,7 @@ const app = express();
 // set cors
 var corsOptions = {
     origin: process.env.FRONTEND_URL,
+    origin: [process.env.FRONTEND_URL, "https://tenvotes-yoga-prod.herokuapp.com/"],
     credentials: true // <-- REQUIRED backend setting
 };
 app.use(cors(corsOptions));
@@ -56,7 +57,6 @@ server.applyMiddleware({
 //   console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
 // );
 
-const PORT = process.env.PORT || 4444;
 app.listen({ port: process.env.PORT || 4000 }, () => {
     console.log(`Our app is running on port ${ PORT }`);
     console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
