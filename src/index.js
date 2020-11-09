@@ -17,7 +17,7 @@ const app = express();
 // set cors
 var corsOptions = {
     origin: process.env.FRONTEND_URL,
-    origin: [process.env.FRONTEND_URL, "https://tenvotes-yoga-prod.herokuapp.com/"],
+    //origin: [process.env.FRONTEND_URL, "https://tenvotes-yoga-prod.herokuapp.com/"],
     credentials: true // <-- REQUIRED backend setting
 };
 app.use(cors(corsOptions));
@@ -50,7 +50,7 @@ app.use(async (req, res, next) => {
 server.applyMiddleware({
     app,
     path: '/', // keep this it will become https://tenvotes-yoga-prod.herokuapp.com/graphql
-    //cors: false, // disables the apollo-server-express cors to allow the cors middleware use
+    cors: false, // disables the apollo-server-express cors to allow the cors middleware use
 })
  
 // app.listen({ port: 4444 }, () =>
@@ -59,8 +59,7 @@ server.applyMiddleware({
 
 app.listen({ port: process.env.PORT || 4000 }, () => {
     //process.env.PORT && console.log(`Our app is running on port ${ PORT }`);
-    !process.env.PORT && console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
-    process.env.PORT && console.log('server ready??')
+    console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
 });
 
 // server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
