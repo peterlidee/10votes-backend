@@ -39,6 +39,9 @@ function createServer(){
         // allow playground in prod
         introspection: true,
         playground: true,
+
+        //set cors to false here aswell
+        cors: false,
     })
 }
 

@@ -49,7 +49,7 @@ app.use(async (req, res, next) => {
 
 server.applyMiddleware({
     app,
-    path: '/', // keep this it will become https://tenvotes-yoga-prod.herokuapp.com/graphql
+    path: '/', // keep this or it will become https://tenvotes-yoga-prod.herokuapp.com/graphql
     cors: false, // disables the apollo-server-express cors to allow the cors middleware use
 })
  
