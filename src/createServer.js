@@ -41,7 +41,7 @@ function createServer(){
         playground: true,
 
         //set cors to false here aswell
-        cors: false,
+        //cors: false,
     })
 }
 
