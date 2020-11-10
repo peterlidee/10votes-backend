@@ -15,12 +15,19 @@ const app = express();
 // add the middleware
 
 // set cors
-var corsOptions = {
-    origin: process.env.FRONTEND_URL,
-    //origin: [process.env.FRONTEND_URL, "https://tenvotes-yoga-prod.herokuapp.com/"],
-    credentials: true // <-- REQUIRED backend setting
-};
-app.use(cors(corsOptions));
+// var corsOptions = {
+//     origin: process.env.FRONTEND_URL,
+//     //origin: [process.env.FRONTEND_URL, "https://tenvotes-yoga-prod.herokuapp.com/"],
+//     credentials: true // <-- REQUIRED backend setting
+// };
+// app.use(cors(corsOptions));
+
+app.use(
+    cors({
+        credentials: true,
+        origin: process.env.FRONTEND_URL,
+    })
+)
 
 app.use(cookieParser());
 // middleware: decode the jwt so we can get the user ID on each request
@@ -50,7 +57,7 @@ app.use(async (req, res, next) => {
 server.applyMiddleware({
     app,
     path: '/', // keep this or it will become https://tenvotes-yoga-prod.herokuapp.com/graphql
-    //cors: false, // disables the apollo-server-express cors to allow the cors middleware use
+    cors: false, // disables the apollo-server-express cors to allow the cors middleware use
 })
  
 // app.listen({ port: 4444 }, () =>
