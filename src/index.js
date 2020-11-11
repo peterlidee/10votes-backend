@@ -22,14 +22,15 @@ const app = express();
 // };
 // app.use(cors(corsOptions));
 
-// app.use(
-//     cors({
-//         credentials: true,
-//         origin: process.env.FRONTEND_URL,
-//         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-//         optionsSuccessStatus: 200 /* some legacy browsers (IE11, various SmartTVs) choke on 204 */,
-//     })
-// )
+app.use(
+    cors({
+        credentials: true,
+        origin: process.env.FRONTEND_URL,
+        //preflightContinue: true,
+        //methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        //optionsSuccessStatus: 200 /* some legacy browsers (IE11, various SmartTVs) choke on 204 */,
+    })
+)
 
 // app.use((req, res, next) => {
 //     res.header(
@@ -67,13 +68,13 @@ app.use(async (req, res, next) => {
 server.applyMiddleware({
     app,
     path: '/', // keep this or it will become https://tenvotes-yoga-prod.herokuapp.com/graphql
-    //cors: false, // disables the apollo-server-express cors to allow the cors middleware use
-    cors: {
-            credentials: true,
-            origin: process.env.FRONTEND_URL,
-            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-            optionsSuccessStatus: 200 /* some legacy browsers (IE11, various SmartTVs) choke on 204 */,
-            }
+    cors: false, // disables the apollo-server-express cors to allow the cors middleware use
+    // cors: {
+    //         credentials: true,
+    //         origin: process.env.FRONTEND_URL,
+    //         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    //         optionsSuccessStatus: 200 /* some legacy browsers (IE11, various SmartTVs) choke on 204 */,
+    //         }
 })
  
 // app.listen({ port: 4444 }, () =>
