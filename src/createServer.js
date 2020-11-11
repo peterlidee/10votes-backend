@@ -41,7 +41,11 @@ function createServer(){
         playground: true,
 
         //set cors to false here aswell
-        //cors: false,
+        // cors: false,
+        // cors: {
+        //     credentials: true,
+        //     origin: process.env.FRONTEND_URL,
+        // },
     })
 }
 

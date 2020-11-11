@@ -26,8 +26,18 @@ app.use(
     cors({
         credentials: true,
         origin: process.env.FRONTEND_URL,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        optionsSuccessStatus: 200 /* some legacy browsers (IE11, various SmartTVs) choke on 204 */,
     })
 )
+
+// app.use((req, res, next) => {
+//     res.header(
+//       "Access-Control-Allow-Origin",
+//       process.env.FRONTEND_URL
+//     );
+//     next();
+// });
 
 app.use(cookieParser());
 // middleware: decode the jwt so we can get the user ID on each request
