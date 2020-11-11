@@ -17,9 +17,10 @@ const app = express();
 // set cors
 var corsOptions = {
     credentials: true, // <-- REQUIRED backend setting
-    origin: process.env.FRONTEND_URL,
+    //origin: process.env.FRONTEND_URL,
+    origin: true,
 };
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 //app.user(cors())
 
@@ -84,9 +85,9 @@ server.applyMiddleware({
     //     }
     // }
 
-    //cors: false, // disables the apollo-server-express cors to allow the cors middleware use
+    cors: false, // disables the apollo-server-express cors to allow the cors middleware use
 
-    cors: corsOptions,
+    //cors: corsOptions,
 
     // cors: {
     //         credentials: true,
