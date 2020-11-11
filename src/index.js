@@ -26,7 +26,7 @@ app.use(
     cors({
         credentials: true,
         origin: process.env.FRONTEND_URL,
-        //origin: "https://tenvotes-yoga-prod.herokuapp.com/",
+        origin: "https://tenvotes-next-prod.herokuapp.com/",
         //preflightContinue: true,
         //methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         //optionsSuccessStatus: 200 /* some legacy browsers (IE11, various SmartTVs) choke on 204 */,
