@@ -16,10 +16,11 @@ const app = express();
 
 // set cors
 var corsOptions = {
+    credentials: true, // <-- REQUIRED backend setting
     origin: process.env.FRONTEND_URL,
-    credentials: true // <-- REQUIRED backend setting
 };
-//app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+
 //app.user(cors())
 
 // app.use((req, res, next) => {
@@ -30,54 +31,63 @@ var corsOptions = {
 //     next();
 // });
 
-app.use(cookieParser());
-// middleware: decode the jwt so we can get the user ID on each request
-app.use((req, res, next) => {
-    // pull the token out of the req
-    const { token } = req.cookies;
-    if (token) {
-        const { userId } = jwt.verify(token, process.env.APP_SECRET);
-        // put the userID on req for further requests to access
-        req.userId = userId;
-    }
-    next();
-});
 
-// middleware: create a middleware that populates the user on each request
-app.use(async (req, res, next) => {
-    // if they aren't logged in, skip this
-    if (!req.userId) return next();
-    const user = await db.query.user(
-      { where: { id: req.userId } },
-      '{ id, permissions, email, items {id}, votes {id item { id }} }'
-    ).catch(error => console.log(error));
-    req.user = user;
-    next();
-});
+
+
+
+// app.use(cookieParser());
+// // middleware: decode the jwt so we can get the user ID on each request
+// app.use((req, res, next) => {
+//     // pull the token out of the req
+//     const { token } = req.cookies;
+//     if (token) {
+//         const { userId } = jwt.verify(token, process.env.APP_SECRET);
+//         // put the userID on req for further requests to access
+//         req.userId = userId;
+//     }
+//     next();
+// });
+
+// // middleware: create a middleware that populates the user on each request
+// app.use(async (req, res, next) => {
+//     // if they aren't logged in, skip this
+//     if (!req.userId) return next();
+//     const user = await db.query.user(
+//       { where: { id: req.userId } },
+//       '{ id, permissions, email, items {id}, votes {id item { id }} }'
+//     ).catch(error => console.log(error));
+//     req.user = user;
+//     next();
+// });
+
+
+
 
 server.applyMiddleware({
     app,
     path: '/', // keep this or it will become https://tenvotes-yoga-prod.herokuapp.com/graphql
 
-    cors: {
-        credentials: true,
-        origin: (origin, callback) => {
-            const whitelist = [
-                process.env.FRONTEND_URL,
-            ];
+    // cors: {
+    //     credentials: true,
+    //     origin: (origin, callback) => {
+    //         const whitelist = [
+    //             process.env.FRONTEND_URL,
+    //         ];
 
-            if (whitelist.indexOf(origin) !== -1) {
-                console.log('origin is in whitelist', origin)
-                callback(null, true)
-            } else {
-                console.log('whitelist', whitelist, "does not contain origin", origin)
-                callback(new Error("custom error, Not allowed by CORS"))
-            }
-        }
-    }
+    //         if (whitelist.indexOf(origin) !== -1) {
+    //             console.log('origin is in whitelist', origin)
+    //             callback(null, true)
+    //         } else {
+    //             console.log('whitelist', whitelist, "does not contain origin", origin)
+    //             callback(new Error("custom error, Not allowed by CORS"))
+    //         }
+    //     }
+    // }
 
     //cors: false, // disables the apollo-server-express cors to allow the cors middleware use
-    //cors: corsOptions,
+
+    cors: corsOptions,
+
     // cors: {
     //         credentials: true,
     //         origin: process.env.FRONTEND_URL,
