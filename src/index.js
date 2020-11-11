@@ -15,23 +15,11 @@ const app = express();
 // add the middleware
 
 // set cors
-// var corsOptions = {
-//     origin: process.env.FRONTEND_URL,
-//     //origin: [process.env.FRONTEND_URL, "https://tenvotes-yoga-prod.herokuapp.com/"],
-//     credentials: true // <-- REQUIRED backend setting
-// };
+var corsOptions = {
+    origin: process.env.FRONTEND_URL,
+    credentials: true // <-- REQUIRED backend setting
+};
 // app.use(cors(corsOptions));
-
-app.use(
-    cors({
-        credentials: true,
-        origin: process.env.FRONTEND_URL,
-        origin: "https://tenvotes-next-prod.herokuapp.com/",
-        //preflightContinue: true,
-        //methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-        //optionsSuccessStatus: 200 /* some legacy browsers (IE11, various SmartTVs) choke on 204 */,
-    })
-)
 
 // app.use((req, res, next) => {
 //     res.header(
@@ -69,7 +57,8 @@ app.use(async (req, res, next) => {
 server.applyMiddleware({
     app,
     path: '/', // keep this or it will become https://tenvotes-yoga-prod.herokuapp.com/graphql
-    cors: false, // disables the apollo-server-express cors to allow the cors middleware use
+    //cors: false, // disables the apollo-server-express cors to allow the cors middleware use
+    cors: corsOptions,
     // cors: {
     //         credentials: true,
     //         origin: process.env.FRONTEND_URL,
