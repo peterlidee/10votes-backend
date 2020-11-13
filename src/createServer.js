@@ -40,30 +40,6 @@ function createServer(){
         introspection: true,
         playground: true,
 
-        //set cors to false here aswell
-        // cors: false,
-        // cors: {
-        //     credentials: true,
-        //     origin: process.env.FRONTEND_URL,
-        // },
-
-        // cors: {
-        //     credentials: true,
-        //     origin: (origin, callback) => {
-        //         const whitelist = [
-        //             process.env.FRONTEND_URL,
-        //         ];
-    
-        //         if (whitelist.indexOf(origin) !== -1) {
-        //             console.log('origin is in whitelist', origin)
-        //             callback(null, true)
-        //         } else {
-        //             console.log('whitelist', whitelist, "does not contain origin", origin)
-        //             callback(new Error("custom error, Not allowed by CORS"))
-        //         }
-        //     }
-        // }
-
     })
 }
 

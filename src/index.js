@@ -2,7 +2,7 @@ require('dotenv').config({ path: 'variables.env' });
 const db = require('./db'); // cause we make db request in middleware to populate user
 const createServer = require('./createServer');
 const express = require('express');
-const cors = require('cors');
+// const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
@@ -18,23 +18,8 @@ const app = express();
 var corsOptions = {
     credentials: true, // <-- REQUIRED backend setting
     //origin: process.env.FRONTEND_URL,
-    origin: true,
+    origin: true, // wtf, really
 };
-//app.use(cors(corsOptions));
-
-//app.user(cors())
-
-// app.use((req, res, next) => {
-//     res.header(
-//       "Access-Control-Allow-Origin",
-//       process.env.FRONTEND_URL
-//     );
-//     next();
-// });
-
-
-
-
 
 // app.use(cookieParser());
 // // middleware: decode the jwt so we can get the user ID on each request
@@ -62,53 +47,16 @@ var corsOptions = {
 // });
 
 
-
-
 server.applyMiddleware({
     app,
-    path: '/', // keep this or it will become https://tenvotes-yoga-prod.herokuapp.com/graphql
-
-    // cors: {
-    //     credentials: true,
-    //     origin: (origin, callback) => {
-    //         const whitelist = [
-    //             process.env.FRONTEND_URL,
-    //         ];
-
-    //         if (whitelist.indexOf(origin) !== -1) {
-    //             console.log('origin is in whitelist', origin)
-    //             callback(null, true)
-    //         } else {
-    //             console.log('whitelist', whitelist, "does not contain origin", origin)
-    //             callback(new Error("custom error, Not allowed by CORS"))
-    //         }
-    //     }
-    // }
-
-    //cors: false, // disables the apollo-server-express cors to allow the cors middleware use
-
+    path: '/', // keep this or it will become frontend/graphql
     cors: corsOptions,
-
-    // cors: {
-    //         credentials: true,
-    //         origin: process.env.FRONTEND_URL,
-    //         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    //         optionsSuccessStatus: 200 /* some legacy browsers (IE11, various SmartTVs) choke on 204 */,
-    //         }
 })
- 
-// app.listen({ port: 4444 }, () =>
-//   console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
-// );
 
 app.listen({ port: process.env.PORT || 4000 }, () => {
     //process.env.PORT && console.log(`Our app is running on port ${ PORT }`);
     console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
 });
-
-// server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
-//     console.log(`🚀 Server ready at ${url}`);
-// });
 
 
 
