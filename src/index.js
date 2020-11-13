@@ -2,7 +2,6 @@ require('dotenv').config({ path: 'variables.env' });
 const db = require('./db'); // cause we make db request in middleware to populate user
 const createServer = require('./createServer');
 const express = require('express');
-// const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
@@ -14,44 +13,45 @@ const app = express();
 
 // add the middleware
 
-// set cors
-var corsOptions = {
-    credentials: true, // <-- REQUIRED backend setting
-    //origin: process.env.FRONTEND_URL,
-    origin: true, // wtf, really
-};
 
-// app.use(cookieParser());
-// // middleware: decode the jwt so we can get the user ID on each request
-// app.use((req, res, next) => {
-//     // pull the token out of the req
-//     const { token } = req.cookies;
-//     if (token) {
-//         const { userId } = jwt.verify(token, process.env.APP_SECRET);
-//         // put the userID on req for further requests to access
-//         req.userId = userId;
-//     }
-//     next();
-// });
+app.use(cookieParser());
+// middleware: decode the jwt so we can get the user ID on each request
+app.use((req, res, next) => {
+    // pull the token out of the req
+    const { token } = req.cookies;
+    if (token) {
+        const { userId } = jwt.verify(token, process.env.APP_SECRET);
+        // put the userID on req for further requests to access
+        req.userId = userId;
+    }
+    next();
+});
 
-// // middleware: create a middleware that populates the user on each request
-// app.use(async (req, res, next) => {
-//     // if they aren't logged in, skip this
-//     if (!req.userId) return next();
-//     const user = await db.query.user(
-//       { where: { id: req.userId } },
-//       '{ id, permissions, email, items {id}, votes {id item { id }} }'
-//     ).catch(error => console.log(error));
-//     req.user = user;
-//     next();
-// });
-
-
-server.applyMiddleware({
-    app,
+// middleware: create a middleware that populates the user on each request
+app.use(async (req, res, next) => {
+    // if they aren't logged in, skip this
+    if (!req.userId) return next();
+    const user = await db.query.user(
+        { where: { id: req.userId } },
+        '{ id, permissions, email, items {id}, votes {id item { id }} }'
+        ).catch(error => console.log(error));
+        req.user = user;
+        next();
+    });
+    
+    // set cors
+    var corsOptions = {
+        credentials: true, // <-- REQUIRED backend setting
+        //origin: process.env.FRONTEND_URL, // you'd think this would work but it only does locally, not on heroku
+        origin: true, // so we just set true and it works, dunno why but it took me long enough
+    };
+    
+    server.applyMiddleware({
+        app,
     path: '/', // keep this or it will become frontend/graphql
     cors: corsOptions,
 })
+
 
 app.listen({ port: process.env.PORT || 4000 }, () => {
     //process.env.PORT && console.log(`Our app is running on port ${ PORT }`);
