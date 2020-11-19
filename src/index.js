@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 app.use(async (req, res, next) => {
     // if they aren't logged in, skip this
     if (!req.userId) {
-        console.log('not logged in')
+        console.log('not logged in', Math.random())
         return next();
     }
     console.log('there is a req.userId', req.userId);
