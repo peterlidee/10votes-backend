@@ -35,12 +35,14 @@ app.use(async (req, res, next) => {
         return next();
     }
     //console.log('there is a req.userId', req.userId);
+    /*
     const user = await db.query.user(
         { where: { id: req.userId } },
         '{ id, permissions, email, items {id}, votes {id item { id }} }'
     ).catch(error => console.log(error));
     req.user = user;
     console.log('user', user)
+    */
     next();
 });
     
