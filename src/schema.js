@@ -7,10 +7,10 @@ const schema = gql`
         slug: String!
     }
     type Mutation{
-        apolloCreateTag(name: String!, slug: String!): Tag!
+        createTag(name: String!, slug: String!): Tag!
     }
     type Query{
-        apolloTag(name: String!): Tag
+        tag(name: String!): Tag
     }
 `;
 

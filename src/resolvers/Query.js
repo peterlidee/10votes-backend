@@ -28,7 +28,7 @@ const Query = {
 
     // tag: forwardTo('db'),
 
-    async apolloTag(parent, args, ctx, info){
+    async tag(parent, args, ctx, info){
         return ctx.db.query.tag({
             where: { name: args.name}
         });

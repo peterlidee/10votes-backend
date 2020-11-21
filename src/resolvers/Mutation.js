@@ -115,7 +115,7 @@ const Mutations = {
     */
 
     
-    async apolloCreateTag(parent, args, ctx, info){
+    async createTag(parent, args, ctx, info){
         // only logged in people can create tags
         if(!ctx.req.userId) throw new Error('You must be logged in to do this');
         const tag = await ctx.db.mutation.createTag({
