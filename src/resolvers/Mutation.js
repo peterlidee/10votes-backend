@@ -8,6 +8,8 @@ const slugify = require('slugify');
 
 const Mutations = {
 
+    /*
+
     async createItem(parent, args, ctx, info){
         // check if the user islogged in
         if(!ctx.req.userId) throw new Error('You must be logged in to do that!');
@@ -47,10 +49,8 @@ const Mutations = {
         
         // 2. handle tags
 
-        /*
-            we get an array of max 3 strings
-            each item may be a new or existing tag
-        */
+        //  we get an array of max 3 strings
+        //    each item may be a new or existing tag
 
        const tagsArgs = {};
        
@@ -112,8 +112,10 @@ const Mutations = {
 
     },
 
-    /*
-    async createTag(parent, args, ctx, info){
+    */
+
+    
+    async apolloCreateTag(parent, args, ctx, info){
         // only logged in people can create tags
         if(!ctx.req.userId) throw new Error('You must be logged in to do this');
         const tag = await ctx.db.mutation.createTag({
@@ -125,6 +127,7 @@ const Mutations = {
         return tag;
     },
 
+    /*
     async createCountry(parent, args, ctx, info){
         const country = await ctx.db.mutation.createCountry({
             data: {
@@ -150,6 +153,8 @@ const Mutations = {
         }, info);
         return location;
     },*/
+
+    /*
 
     async updateItem(parent, args, ctx, info){
         
@@ -492,7 +497,7 @@ const Mutations = {
 
         // 5. return vote
         return vote;
-    },
+    },*/
 
 };
 

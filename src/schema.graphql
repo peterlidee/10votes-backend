@@ -1,50 +1,54 @@
-# import * from './generated/prisma.graphql'
+# ## import Tag from './generated/prisma.graphql'
 
-type SuccessMessage{
-    message: String
-}
+#type SuccessMessage{
+#    message: String
+#}
 type Mutation{
-    createItem(image: String, largeImage: String, location: String, tags: [String]!): Item!
-    updateItem(id: ID!, location: String, newTagNames: [String], oldTagNames: [String], oldTagIds: [ID], voteCount: Int): Item!
-    deleteItem(id: ID!): Item
-    signup(email: String!, password: String!): User!
-    login(email: String!, password: String!): User!
-    logout: SuccessMessage
-    requestReset(email: String!): SuccessMessage
-    resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
-    updatePermissions(permissions: [Permission], userId: ID!): User!
+    #createItem(image: String, largeImage: String, location: String, tags: [String]!): Item!
+    #updateItem(id: ID!, location: String, newTagNames: [String], oldTagNames: [String], oldTagIds: [ID], voteCount: Int): Item!
+    #deleteItem(id: ID!): Item
+    #signup(email: String!, password: String!): User!
+    #login(email: String!, password: String!): User!
+    #logout: SuccessMessage
+    #requestReset(email: String!): SuccessMessage
+    #resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
+    #updatePermissions(permissions: [Permission], userId: ID!): User!
     createTag(name: String!, slug: String!): Tag!
-    createCountry(name: String!, countryCode: String!): Country!
-    createLocation(name: String!, country: ID!): Location!
-    updateLocation(id: ID!, itemCount: Int): Location!
-    castVote(itemId: ID!): Vote!
-    deleteVote(voteId: ID!, itemId: ID!): Vote!
+    #createCountry(name: String!, countryCode: String!): Country!
+    #createLocation(name: String!, country: ID!): Location!
+    #updateLocation(id: ID!, itemCount: Int): Location!
+    #castVote(itemId: ID!): Vote!
+    #deleteVote(voteId: ID!, itemId: ID!): Vote!
 }
 type Query{
-    item(where: ItemWhereUniqueInput!): Item
-    items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
-    itemsConnection(where: ItemWhereInput): ItemConnection!
-    me: User
-    users: [User]!
-    tag(where: TagWhereUniqueInput!): Tag
-    tags(where: TagWhereInput): [Tag]!
-    location(where: LocationWhereUniqueInput): Location
-    locations(where: LocationWhereInput): [Location]!
-    locationsConnection(where: LocationWhereInput): LocationConnection!
-    country(where: CountryWhereUniqueInput): Country
+    #item(where: ItemWhereUniqueInput!): Item
+    #items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
+    #itemsConnection(where: ItemWhereInput): ItemConnection!
+    #me: User
+    #users: [User]!
+    
+    #tag(where: TagWhereUniqueInput!): Tag
+    tag(name: String!): Tag
+
+
+    #tags(where: TagWhereInput): [Tag]!
+    #location(where: LocationWhereUniqueInput): Location
+    #locations(where: LocationWhereInput): [Location]!
+    #locationsConnection(where: LocationWhereInput): LocationConnection!
+    #country(where: CountryWhereUniqueInput): Country
 }
-type User{
-    id: ID!
-    email: String!
-    permissions: [Permission!]!
-    items: [Item]!
-    votes: [Vote]!
-}
-enum ItemOrderByInput {
-  updatedAt_ASC
-  updatedAt_DESC
-  voteCount_ASC
-  voteCount_DESC
-  createdAt_ASC
-  createdAt_DESC
-}
+#type User{
+#    id: ID!
+#    email: String!
+#    permissions: [Permission!]!
+#    items: [Item]!
+#    votes: [Vote]!
+#}
+#enum ItemOrderByInput {
+#  updatedAt_ASC
+#  updatedAt_DESC
+#  voteCount_ASC
+#  voteCount_DESC
+#  createdAt_ASC
+#  createdAt_DESC
+#}
