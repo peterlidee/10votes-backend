@@ -2,6 +2,11 @@ endpoint: ${env:PRISMA_ENDPOINT}
 #endpoint: https://tenvotes-prisma-7cde417b7c.herokuapp.com/tenvotes-prod/prod
 datamodel: datamodel.graphql
 secret: ${env:PRISMA_SECRET}
+generate:
+  - generator: javascript-client
+    output: ./src/generated/prisma-client/
+  - generator: graphql-schema
+    output: ./src/generated/prisma.graphql
 hooks:
   post-deploy:
-    - graphql get-schema -p prisma
+    - prisma generate
