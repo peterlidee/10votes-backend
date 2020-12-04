@@ -7,15 +7,15 @@ const Query = {
     // item: forwardTo('db'),
     // itemsConnection: forwardTo('db'),
     
-    // async me(parent, args, ctx, info){
-    //     // check if there is a current user id
-    //     if(!ctx.req.userId){
-    //         return null;
-    //     }
-    //     return ctx.db.query.user({
-    //         where: { id: ctx.req.userId },
-    //     }, info);
-    // },
+    async me(parent, args, ctx, info){
+        // check if there is a current user id
+        if(!ctx.req.userId){
+            return null;
+        }
+        return await ctx.db.query.user({
+            where: { id: ctx.req.userId },
+        }, info);
+    },
     
     // async users(parent, args, ctx, info){
     //     // are the logged in?

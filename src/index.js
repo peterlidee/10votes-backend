@@ -13,7 +13,7 @@ const app = express();
 
 // add the middleware
 
-/*app.use(cookieParser());
+app.use(cookieParser());
 // middleware: decode the jwt so we can get the user ID on each request
 app.use((req, res, next) => {
     //console.log('cookies middleware', req.cookies)
@@ -31,23 +31,18 @@ app.use((req, res, next) => {
 app.use(async (req, res, next) => {
     // if they aren't logged in, skip this
     if (!req.userId) {
-        console.log('not logged in', Math.random())
         return next();
     }
-    //console.log('there is a req.userId', req.userId);
-    
     const user = await db.query.user(
         { where: { id: req.userId } },
         '{ id, permissions, email, items {id}, votes {id item { id }} }'
     ).catch(error => console.log(error));
     req.user = user;
-    console.log('user', user)
-    
     next();
-});*/
+});
     
 // set cors
-var corsOptions = {
+const corsOptions = {
     credentials: true, // <-- REQUIRED backend setting
     //origin: process.env.FRONTEND_URL, // you'd think this would work but it only does locally, not on heroku
     origin: true, // so we just set true and it works, dunno why but it took me long enough
@@ -60,6 +55,5 @@ server.applyMiddleware({
 })
 
 app.listen({ port: process.env.PORT || 4000 }, () => {
-    //process.env.PORT && console.log(`Our app is running on port ${ PORT }`);
     console.log(`🚀 Server ready at http://localhost:4444${server.graphqlPath}`)
 });

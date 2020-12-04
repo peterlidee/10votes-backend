@@ -312,6 +312,7 @@ const Mutations = {
 
         return deleted;
     },
+    */
 
     async signup(parent, args, ctx, info){
         // lowercase the email
@@ -328,13 +329,16 @@ const Mutations = {
         //create the JWT token for them
         const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
         // we set the jwt as a cookie on the response
-        ctx.response.cookie('token', token, {
+        
+        ctx.res.cookie('token', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
         });
         //finally we return the user to the browser
         return user;
     },
+
+    /*
 
     async login(parent, {email, password}, ctx, info){
         // 1. first check it there's a user with this email
