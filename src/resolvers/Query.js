@@ -8,6 +8,8 @@ const Query = {
     // itemsConnection: forwardTo('db'),
     
     async me(parent, args, ctx, info){
+        console.log('calling me query!!')
+        console.log('is there userId?', ctx.req.userId)
         // check if there is a current user id
         if(!ctx.req.userId){
             return null;

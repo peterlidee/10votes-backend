@@ -23,6 +23,7 @@ app.use((req, res, next) => {
         const { userId } = jwt.verify(token, process.env.APP_SECRET);
         // put the userID on req for further requests to access
         req.userId = userId;
+        //console.log('set userId?', req.userId)
     }
     next();
 });
@@ -38,6 +39,7 @@ app.use(async (req, res, next) => {
         '{ id, permissions, email, items {id}, votes {id item { id }} }'
     ).catch(error => console.log(error));
     req.user = user;
+    //console.log('user on req', req.user)
     next();
 });
     
