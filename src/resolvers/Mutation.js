@@ -335,6 +335,9 @@ const Mutations = {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
         });
+
+        console.log('res', ctx.res)
+
         //finally we return the user to the browser
         return user;
     },
