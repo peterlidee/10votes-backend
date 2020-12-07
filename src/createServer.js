@@ -20,7 +20,7 @@ function createServer(){
         },
         context: req => ({ ...req, db }),
 
-        // allow playground in prod
+        // allow playground in prod //TODO
         introspection: true,
         playground: true,
 
