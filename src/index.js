@@ -15,6 +15,15 @@ const app = express();
 
 app.use(cookieParser());
 // middleware: decode the jwt so we can get the user ID on each request
+
+// app.use((req, res, next) => {
+//     console.log('what is res?')
+//     console.log('************************************')
+//     console.log(res)
+//     console.log('**************************************')
+//     next();
+// });
+
 app.use((req, res, next) => {
     //console.log('cookies middleware', req.cookies)
     // pull the token out of the req

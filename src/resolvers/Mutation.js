@@ -5,6 +5,7 @@ const { promisify } = require('util');
 const { transport, makeANiceEmail } = require('../mail');
 const { hasPermission, removeDuplicates } = require('../utils');
 const slugify = require('slugify');
+const { nonExecutableDefinitionMessage } = require('graphql/validation/rules/ExecutableDefinitions');
 
 const Mutations = {
 
@@ -334,9 +335,13 @@ const Mutations = {
         ctx.res.cookie('token', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
+            secure: true,
+            sameSite: "none",
         });
 
-        //console.log('res', ctx.res)
+        //console.log('what is ctx? ***************************', ctx)
+
+        //console.log('req is ***************************', ctx.req)
 
         //finally we return the user to the browser
         return user;
