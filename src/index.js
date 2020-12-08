@@ -26,17 +26,17 @@ const { ApolloServer, gql } = require('apollo-server-express');
 
 const typeDefs = gql`
     type Query{
-        dummy: Boolean!
+        dummy: Int!
     }
     type Mutation{
-        testCookie: Boolean!
+        testCookie: Int!
     }
 `;
 
 const resolvers = {
     Query: {
         dummy() {
-            return true;
+            return 1;
         },
     },
     Mutation:{
@@ -54,7 +54,7 @@ const resolvers = {
             });
             //console.log('ctx', ctx)
 
-            return true;
+            return random;
         }
     }
 };
