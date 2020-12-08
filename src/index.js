@@ -1,12 +1,102 @@
 require('dotenv').config({ path: 'variables.env' });
-const db = require('./db'); // cause we make db request in middleware to populate user
-const createServer = require('./createServer');
+
+//const db = require('./db'); // cause we make db request in middleware to populate user
+// 1
+const { Prisma } = require('prisma-binding');
+
+const db = new Prisma({
+    typeDefs: './src/generated/prisma.graphql',
+    endpoint: process.env.PRISMA_ENDPOINT,
+    secret: process.env.PRISMA_SECRET,
+    debug: false
+});
+// -1
+
+//const createServer = require('./createServer');
+// 2
+const { ApolloServer, gql } = require('apollo-server-express');
+
+// const Query = require('./resolvers/Query.js');
+// const Mutation = require('./resolvers/Mutation.js');
+//const db = require('./db');
+
+// we flipped from using schema.graphql to schema.js with gql
+//const typeDefs = require('./schema.js');
+// 3
+
+const typeDefs = gql`
+    type Query{
+        dummy: Boolean!
+    }
+    type Mutation{
+        testCookie: Boolean!
+    }
+`;
+
+const resolvers = {
+    Query: {
+        dummy() {
+            return true;
+        },
+    },
+    Mutation:{
+        testCookie(parent, args, ctx, info){
+
+            // generate random num 0-1000 to set as value for cookie
+            const random = Math.floor(Math.random() * 1000);
+
+            // set cookie
+            ctx.res.cookie('test', random, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
+                //secure: true,
+                //sameSite: "none",
+            });
+            //console.log('ctx', ctx)
+
+            return true;
+        }
+    }
+};
+
+// -3
+
+// create ApolloServer
+const server = new ApolloServer({
+    typeDefs,
+    // resolvers: {
+    //     Mutation,
+    //     Query,
+    // },
+    resolvers,
+    resolverValidationOptions: {
+        requireResolversForResolveType: false
+    },
+    context: req => ({ ...req, db }),
+    //context: req => ({ ...req }),
+
+    // allow playground in prod //TODO
+    introspection: true,
+    playground: true,
+
+})
+
+// -2
+
+
+
+
+
+
+
+
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
 // make the apolloServer
-const server = createServer();
+// 2
+//const server = createServer();
 
 // make the express server
 const app = express();
