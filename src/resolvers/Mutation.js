@@ -352,10 +352,11 @@ const Mutations = {
         const random = Math.floor(Math.random() * 1000);
 
         ctx.res.cookie('test', random, {
+            domain: "tenvotes-yoga-prod.herokuapp.com",
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
-            //secure: true,
-            //sameSite: "none",
+            secure: true,
+            sameSite: "none",
         });
         return { message: `Howdy from testCookie, ${random}` };
     }
