@@ -18,7 +18,8 @@ function createServer(){
         resolverValidationOptions: {
             requireResolversForResolveType: false
         },
-        context: req => ({ ...req, db }),
+        //context: req => ({ ...req, db }),
+        context: req => ({ ...req }),
 
         // allow playground in prod //TODO
         introspection: true,

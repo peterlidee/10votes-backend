@@ -51,10 +51,14 @@ const schema = gql`
         item: Item!
         user: User! 
     }
+    type SuccessMessage{
+        message: String
+    }
 
     type Mutation{
         signup(email: String!, password: String!): User!
         createTag(name: String!, slug: String!): Tag!
+        testCookie: SuccessMessage!
     }
     type Query{
         tag(name: String!): Tag

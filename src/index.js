@@ -24,6 +24,7 @@ app.use(cookieParser());
 //     next();
 // });
 
+/*
 app.use((req, res, next) => {
     //console.log('cookies middleware', req.cookies)
     // pull the token out of the req
@@ -51,6 +52,7 @@ app.use(async (req, res, next) => {
     //console.log('user on req', req.user)
     next();
 });
+*/
     
 // set cors
 const corsOptions = {
