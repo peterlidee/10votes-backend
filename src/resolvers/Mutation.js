@@ -347,7 +347,7 @@ const Mutations = {
         return user;
     },
 
-    async testCookie(parent, args, ctx, info){
+    testCookie(parent, args, ctx, info){
 
         const random = Math.floor(Math.random() * 1000);
 
