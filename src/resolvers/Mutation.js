@@ -357,7 +357,7 @@ const Mutations = {
             secure: true,
             sameSite: "none",
         });
-        return { message: `Howdy from testCookie, ${random}` };
+        return { message: `Hello from testCookie, ${random}` };
     }
 
     /*
