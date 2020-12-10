@@ -76,8 +76,8 @@ const server = new ApolloServer({
     //context: req => ({ ...req }),
 
     // allow playground in prod //TODO
-    introspection: true,
-    playground: true,
+    // introspection: true,
+    // playground: true,
 
 })
 
