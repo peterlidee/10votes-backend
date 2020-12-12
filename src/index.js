@@ -49,21 +49,21 @@ const resolvers = {
             const random = Math.floor(Math.random() * 1000);
 
             // set cookie
-            // ctx.res.cookie('test', random, {
-            //     httpOnly: true,
-            //     maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
-            //     //secure: true,
-            //     //sameSite: "none",
-            // });
+            ctx.res.cookie('test', random, {
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
+                //secure: true,
+                //sameSite: "none",
+            });
 
             // set other cookie?
-            ctx.cookies.set("other-test", "booyah", {
-                httpOnly: true,
-                //sameSite: "lax",
-                // here we put 6 hours, but you can put whatever you want (the shorter the safer, but also more annoying)
-                maxAge: 1000 * 60 * 60 * 24, // oneday cookie
-                //secure: process.env.NODE_ENV === "production",
-            });
+            // ctx.cookies.set("other-test", "booyah", {
+            //     httpOnly: true,
+            //     //sameSite: "lax",
+            //     // here we put 6 hours, but you can put whatever you want (the shorter the safer, but also more annoying)
+            //     maxAge: 1000 * 60 * 60 * 24, // oneday cookie
+            //     //secure: process.env.NODE_ENV === "production",
+            // });
             
             //console.log('************* ctx ******************', ctx.res)
 
@@ -93,15 +93,15 @@ const server = new ApolloServer({
     
     //context: req => ({ ...req, db }),
     
-    //context: ctx => ({ ...ctx }),
+    context: ctx => ({ ...ctx }),
 
-    context: ctx => {
-        const cookies = new Cookies(ctx.req, ctx.res);
-        //const token = cookies.get("auth-token");
-        //const user = verifyToken(token);
-        //return { ...ctx, cookies };
-        return { cookies, db };
-    },
+    // context: ctx => {
+    //     const cookies = new Cookies(ctx.req, ctx.res);
+    //     //const token = cookies.get("auth-token");
+    //     //const user = verifyToken(token);
+    //     //return { ...ctx, cookies };
+    //     return { cookies, db };
+    // },
 
     // context: req => {
 
