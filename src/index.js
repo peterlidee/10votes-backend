@@ -42,17 +42,33 @@ const resolvers = {
     Mutation:{
         testCookie(parent, args, ctx, info){
 
+            //console.log('---------------- ctx.res --------------', ctx.res)
+            
+
             // generate random num 0-1000 to set as value for cookie
             const random = Math.floor(Math.random() * 1000);
 
             // set cookie
-            ctx.res.cookie('test', random, {
+            // ctx.res.cookie('test', random, {
+            //     httpOnly: true,
+            //     maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
+            //     //secure: true,
+            //     //sameSite: "none",
+            // });
+
+            // set other cookie?
+            ctx.cookies.set("other-test", "booyah", {
                 httpOnly: true,
-                maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
-                //secure: true,
-                //sameSite: "none",
+                //sameSite: "lax",
+                // here we put 6 hours, but you can put whatever you want (the shorter the safer, but also more annoying)
+                maxAge: 1000 * 60 * 60 * 24, // oneday cookie
+                //secure: process.env.NODE_ENV === "production",
             });
-            //console.log('ctx', ctx)
+            
+            //console.log('************* ctx ******************', ctx.res)
+
+            // console.log('cookie????', ctx.cookies)
+            // console.log('********** ctx *************', ctx)
 
             return random;
         }
@@ -60,6 +76,8 @@ const resolvers = {
 };
 
 // -3
+
+const Cookies = require("cookies");
 
 // create ApolloServer
 const server = new ApolloServer({
@@ -74,7 +92,33 @@ const server = new ApolloServer({
     },
     
     //context: req => ({ ...req, db }),
-    //context: req => ({ ...req }),
+    
+    //context: ctx => ({ ...ctx }),
+
+    context: ctx => {
+        const cookies = new Cookies(ctx.req, ctx.res);
+        //const token = cookies.get("auth-token");
+        //const user = verifyToken(token);
+        //return { ...ctx, cookies };
+        return { cookies, db };
+    },
+
+    // context: req => {
+
+    //     //console.log('wgat is req here?', req)
+    //     //const cookies = new Cookies(req.req, req.res);
+    //     //console.log('cookies', cookies)
+    //     return {...req}
+    // }
+
+    // context: ({ req, res }) => {
+    //     const cookies = new Cookies(req, res);
+    //     // const token = cookies.get("auth-token");
+    //     // const user = verifyToken(token);
+    //     return {
+    //         cookies,
+    //     };
+    // },
 
     // allow playground in prod //TODO
     // introspection: true,
@@ -104,7 +148,9 @@ const app = express();
 
 // add the middleware
 
-app.use(cookieParser());
+//app.use(cookieParser());
+
+
 // middleware: decode the jwt so we can get the user ID on each request
 
 // app.use((req, res, next) => {
@@ -112,6 +158,11 @@ app.use(cookieParser());
 //     console.log('************************************')
 //     console.log(res)
 //     console.log('**************************************')
+//     next();
+// });
+
+// app.use((req, res, next) => {
+//     console.log('are there cookies sent with req?', req.cookies)
 //     next();
 // });
 

@@ -349,6 +349,8 @@ const Mutations = {
 
     testCookie(parent, args, ctx, info){
 
+        console.log('ctx', ctx)
+
         const random = Math.floor(Math.random() * 1000);
 
         ctx.res.cookie('test', random, {
