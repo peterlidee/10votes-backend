@@ -203,11 +203,19 @@ const corsOptions = {
     origin: "https://10votes-frontend.peterlidee.vercel.app/",
     //origin: true, // so we just set true and it works, dunno why but it took me long enough
 };
+
+app.use(
+    cors({
+        credentials: true,
+        origin: "https://10votes-frontend.peterlidee.vercel.app/",
+    })
+)
     
 server.applyMiddleware({
     app,
     path: '/', // keep this or it will become frontend/graphql
-    cors: corsOptions,
+    //cors: corsOptions,
+    cors: false,
 })
 
 app.listen({ port: process.env.PORT || 4000 }, () => {
