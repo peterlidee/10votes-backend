@@ -35,12 +35,12 @@ const typeDefs = gql`
 
 const resolvers = {
     Query: {
-        dummy() {
+        dummy: () => {
             return 1;
         },
     },
     Mutation:{
-        testCookie(parent, args, ctx, info){
+        testCookie: (parent, args, ctx, info) => {
 
             //console.log('---------------- ctx.res --------------', ctx.res)
             
