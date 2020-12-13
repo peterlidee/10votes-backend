@@ -199,25 +199,25 @@ app.use(async (req, res, next) => {
 // set cors
 const corsOptions = {
     credentials: true, // <-- REQUIRED backend setting
-    origin: process.env.FRONTEND_URL, // you'd think this would work but it only does locally, not on heroku
+    //origin: process.env.FRONTEND_URL, // you'd think this would work but it only does locally, not on heroku
     origin: "https://10votes-frontend.peterlidee.vercel.app/",
     //origin: true, // so we just set true and it works, dunno why but it took me long enough
 };
 
-const cors = require('cors');
+//const cors = require('cors');
 
-app.use(
-    cors({
-        credentials: true,
-        origin: "https://10votes-frontend.peterlidee.vercel.app/",
-    })
-)
+// app.use(
+//     cors({
+//         origin: "https://10votes-frontend.peterlidee.vercel.app/",
+//         credentials: true,
+//     })
+// )
     
 server.applyMiddleware({
     app,
     path: '/', // keep this or it will become frontend/graphql
-    //cors: corsOptions,
-    cors: false,
+    cors: corsOptions,
+    //cors: false,
 })
 
 app.listen({ port: process.env.PORT || 4000 }, () => {
