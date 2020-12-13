@@ -200,8 +200,8 @@ app.use(async (req, res, next) => {
 const corsOptions = {
     credentials: true, // <-- REQUIRED backend setting
     //origin: process.env.FRONTEND_URL, // you'd think this would work but it only does locally, not on heroku
-    origin: "https://10votes-frontend.peterlidee.vercel.app/",
-    //origin: true, // so we just set true and it works, dunno why but it took me long enough
+    //origin: "https://10votes-frontend.peterlidee.vercel.app/",
+    origin: true, // so we just set true and it works, dunno why but it took me long enough
 };
 
 //const cors = require('cors');
