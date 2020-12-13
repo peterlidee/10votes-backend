@@ -204,6 +204,8 @@ const corsOptions = {
     //origin: true, // so we just set true and it works, dunno why but it took me long enough
 };
 
+const cors = require('cors');
+
 app.use(
     cors({
         credentials: true,
