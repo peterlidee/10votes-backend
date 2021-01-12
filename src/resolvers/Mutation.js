@@ -347,21 +347,6 @@ const Mutations = {
         return user;
     },
 
-    testCookie(parent, args, ctx, info){
-
-        console.log('ctx', ctx)
-
-        const random = Math.floor(Math.random() * 1000);
-
-        ctx.res.cookie('test', random, {
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
-            secure: true,
-            sameSite: "none",
-        });
-        return { message: `Hello from testCookie, ${random}` };
-    }
-
     /*
 
     async login(parent, {email, password}, ctx, info){
