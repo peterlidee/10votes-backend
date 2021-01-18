@@ -57,6 +57,7 @@ const schema = gql`
 
     type Mutation{
         signup(email: String!, password: String!): User!
+        logout: SuccessMessage
         createTag(name: String!, slug: String!): Tag!
     }
     type Query{

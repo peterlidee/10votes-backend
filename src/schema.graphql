@@ -7,9 +7,9 @@ type Mutation{
     #createItem(image: String, largeImage: String, location: String, tags: [String]!): Item!
     #updateItem(id: ID!, location: String, newTagNames: [String], oldTagNames: [String], oldTagIds: [ID], voteCount: Int): Item!
     #deleteItem(id: ID!): Item
-    #signup(email: String!, password: String!): User!
+    signup(email: String!, password: String!): User!
     #login(email: String!, password: String!): User!
-    #logout: SuccessMessage
+    logout: SuccessMessage
     #requestReset(email: String!): SuccessMessage
     #resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
     #updatePermissions(permissions: [Permission], userId: ID!): User!

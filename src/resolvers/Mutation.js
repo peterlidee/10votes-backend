@@ -330,7 +330,7 @@ const Mutations = {
         //create the JWT token for them
         const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
         // we set the jwt as a cookie on the response
-        console.log('token', token)
+        //console.log('token', token)
         
         ctx.res.cookie('token', token, {
             httpOnly: true,
@@ -369,10 +369,14 @@ const Mutations = {
         return user;
     },
 
+    */
+
     logout(parent, args, ctx, info){
         ctx.response.clearCookie('token');
         return { message: 'Goodbye!'};
     },
+
+    /*
 
     async requestReset(parent, args, ctx, info){
         // 1. check if it's a real user
