@@ -1,5 +1,7 @@
 require('dotenv').config({ path: 'variables.env' });
 const createServer = require('./createServer')
+// called to populate user on req
+const db = require('./db');
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -25,7 +27,6 @@ app.use((req, res, next) => {
     next();
 });
 
-/*
 // middleware: create a middleware that populates the user on each request
 app.use(async (req, res, next) => {
     // if they aren't logged in, skip this
@@ -40,7 +41,7 @@ app.use(async (req, res, next) => {
     //console.log('user on req', req.user)
     next();
 });
-*/
+
 
 //const cors = require('cors'); // TODO remove?
     

@@ -372,9 +372,11 @@ const Mutations = {
     */
 
     logout(parent, args, ctx, info){
-        ctx.response.clearCookie('token');
+        // Cookie ‘token’ is geweigerd omdat deze al is verlopen. ? TODO?
+        ctx.res.clearCookie('token', { httpOnly: true, secure: true, sameSite: "none"});
         return { message: 'Goodbye!'};
     },
+
 
     /*
 
