@@ -390,8 +390,7 @@ const Mutations = {
         // 4. return the message
         return { message: 'Thanks' }
     },
-    
-    /*
+        
     async resetPassword(parent, args, ctx, info){
         // 1. check if the passwords match
         if(args.password !== args.confirmPassword) throw new Error('Passwords didn\'t match.');
@@ -418,13 +417,15 @@ const Mutations = {
         // 6. generate jwt
         const token = jwt.sign({ userId: updatedUser.id }, process.env.APP_SECRET);
         // 7. set the jwt cookie
-        ctx.response.cookie('token', token, {
+        ctx.res.cookie('token', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
         });
         // 8. return new user
         return updatedUser;
     },
+
+    /*
 
     async updatePermissions(parent, args, ctx, info){
         // 1. are they logged in

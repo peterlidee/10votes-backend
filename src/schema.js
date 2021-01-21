@@ -60,6 +60,7 @@ const schema = gql`
         login(email: String!, password: String!): User!
         logout: SuccessMessage
         requestReset(email: String!): SuccessMessage
+        resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
         createTag(name: String!, slug: String!): Tag!
     }
     type Query{
