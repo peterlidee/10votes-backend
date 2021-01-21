@@ -338,16 +338,9 @@ const Mutations = {
             secure: true,
             sameSite: "none",
         });
-
-        //console.log('what is ctx? ***************************', ctx)
-
-        //console.log('req is ***************************', ctx.req)
-
         //finally we return the user to the browser
         return user;
     },
-
-    /*
 
     async login(parent, {email, password}, ctx, info){
         // 1. first check it there's a user with this email
@@ -361,7 +354,7 @@ const Mutations = {
         // 3. generate jwt token
         const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
         // 4. set the cookie with the token
-        ctx.response.cookie('token', token, {
+        ctx.res.cookie('token', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
         });
@@ -369,17 +362,12 @@ const Mutations = {
         return user;
     },
 
-    */
-
     logout(parent, args, ctx, info){
         // Cookie ‘token’ is geweigerd omdat deze al is verlopen. ? TODO?
         ctx.res.clearCookie('token', { httpOnly: true, secure: true, sameSite: "none"});
         return { message: 'Goodbye!'};
     },
-
-
-    /*
-
+    
     async requestReset(parent, args, ctx, info){
         // 1. check if it's a real user
         const user = await ctx.db.query.user({ where: { email: args.email }});
@@ -402,7 +390,8 @@ const Mutations = {
         // 4. return the message
         return { message: 'Thanks' }
     },
-
+    
+    /*
     async resetPassword(parent, args, ctx, info){
         // 1. check if the passwords match
         if(args.password !== args.confirmPassword) throw new Error('Passwords didn\'t match.');
