@@ -65,8 +65,16 @@ const schema = gql`
         createTag(name: String!, slug: String!): Tag!
     }
     type Query{
-        tag(name: String!): Tag
         me: User
+        tag(name: String!): Tag
+        
+        #tags(where: TagWhereInput): [Tag]!
+
+        #calls TagWhereInput
+        tags(names: [String!]!): [Tag]!
+
+        #location(where: LocationWhereUniqueInput): Location
+        #locations(where: LocationWhereInput): [Location]!
     }
 `;
 

@@ -34,12 +34,19 @@ const Query = {
         return ctx.db.query.tag({
             where: { name: args.name}
         });
+    },
+
+    async tags(parent, args, ctx, info){
+        return ctx.db.query.tags({
+            where: { name_in: args.names }
+        })
     }
 
 
-    // tags: forwardTo('db'),
-    // location: forwardTo('db'),
-    // locations: forwardTo('db'),
+    //tags: forwardTo('db'),
+    //location: forwardTo('db'),
+    //locations: forwardTo('db'),
+    
     // locationsConnection: forwardTo('db'),
     // country: forwardTo('db'),
 
