@@ -9,8 +9,6 @@ const { nonExecutableDefinitionMessage } = require('graphql/validation/rules/Exe
 
 const Mutations = {
 
-    /*
-
     async createItem(parent, args, ctx, info){
         // check if the user islogged in
         if(!ctx.req.userId) throw new Error('You must be logged in to do that!');
@@ -112,8 +110,6 @@ const Mutations = {
         return item;
 
     },
-
-    */
 
     
     async createTag(parent, args, ctx, info){

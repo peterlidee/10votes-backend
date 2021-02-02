@@ -61,6 +61,7 @@ const schema = gql`
         logout: SuccessMessage
         requestReset(email: String!): SuccessMessage
         resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
+        createItem(image: String, largeImage: String, location: String, tags: [String]!): Item!
         createTag(name: String!, slug: String!): Tag!
     }
     type Query{
