@@ -27,13 +27,11 @@ type Query{
     #me: User
     #users: [User]!
     
-    #tag(where: TagWhereUniqueInput!): Tag
-    tag(name: String!): Tag
-
-
-    #tags(where: TagWhereInput): [Tag]!
-    #location(where: LocationWhereUniqueInput): Location
-    #locations(where: LocationWhereInput): [Location]!
+    tag(where: TagWhereUniqueInput!): Tag
+    tags(where: TagWhereInput): [Tag]!
+    location(where: LocationWhereUniqueInput): Location
+    locations(where: LocationWhereInput): [Location]!
+    
     #locationsConnection(where: LocationWhereInput): LocationConnection!
     #country(where: CountryWhereUniqueInput): Country
 }

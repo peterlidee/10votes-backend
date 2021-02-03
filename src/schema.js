@@ -67,14 +67,12 @@ const schema = gql`
     type Query{
         me: User
         tag(name: String!): Tag
-        
-        #tags(where: TagWhereInput): [Tag]!
-
-        #calls TagWhereInput
-        tags(names: [String!]!): [Tag]!
-
+        #calls TagWhereInput, namesIn for exact search, nameContains for partial fit, 'tes' will yield 'test' and 'test1'
+        tags(namesIn: [String!], nameContains: String): [Tag]!
         #location(where: LocationWhereUniqueInput): Location
-        #locations(where: LocationWhereInput): [Location]!
+        location(slug: String): Location
+        #calls LocationWhereInput, matches nameContains or (locationSlug AND countrycode)
+        locations(nameContains: String, locationSlug: String, countryCode: String): [Location]!
     }
 `;
 

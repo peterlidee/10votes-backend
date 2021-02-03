@@ -33,19 +33,52 @@ const Query = {
     async tag(parent, args, ctx, info){
         return ctx.db.query.tag({
             where: { name: args.name}
-        });
+        }, info);
     },
 
+    // 2 possibilities: 
+    // 1. namesIn: [String!] looks for extact matches
+    // 2. nameContains: String looks for all the tags that contain the query
     async tags(parent, args, ctx, info){
-        return ctx.db.query.tags({
-            where: { name_in: args.names }
-        })
+        if(!args.namesIn && !args.nameContains) throw new Error('There needs to be a tag query! No arguments given.')
+        if(args.namesIn){
+            return ctx.db.query.tags({
+                where: { name_in: args.namesIn }
+            }, info)
+        }
+        if(args.nameContains){
+            return ctx.db.query.tags({
+                where: { name_contains: args.nameContains }
+            }, info)
+        }
+    },
+
+    // 2 use cases
+    // 1. nameContains: matches all location names that contain string, f.e. 'tes' matches "testing" and "test"
+    // 2. double exact match: slug and countrycode
+    async locations(parent, args, ctx, info){
+        if(args.nameContains){
+            return ctx.db.query.locations({
+                where: { name_contains: args.nameContains }
+            }, info)
+        }
+        if(args.locationSlug && args.countryCode){
+            return ctx.db.query.locations({
+                where: { AND: [
+                    { slug: args.locationSlug },
+                    { country: { countryCode: args.countryCode }}
+                ]}
+            }, info)
+        }
+        throw new Error('There needs to be a location query! No arguments given.');
+    },
+
+    async location(parent, args, ctx, info){
+        if(!args.slug) throw new Error('No location query given.')
+        return ctx.db.query.location({
+            where: { slug: args.slug }
+        }, info)
     }
-
-
-    //tags: forwardTo('db'),
-    //location: forwardTo('db'),
-    //locations: forwardTo('db'),
     
     // locationsConnection: forwardTo('db'),
     // country: forwardTo('db'),
