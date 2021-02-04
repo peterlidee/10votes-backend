@@ -1,4 +1,4 @@
-const { forwardTo }  = require('prisma-binding');
+const { forwardTo }  = require('prisma-binding'); // TODO, remove ?
 const { hasPermission } = require('../utils');
 
 const Query = {
@@ -28,8 +28,6 @@ const Query = {
     //     return ctx.db.query.users({}, info);
     // },
 
-    // tag: forwardTo('db'),
-
     async tag(parent, args, ctx, info){
         return ctx.db.query.tag({
             where: { name: args.name}
@@ -40,7 +38,6 @@ const Query = {
     // 1. namesIn: [String!] looks for extact matches
     // 2. nameContains: String looks for all the tags that contain the query
     async tags(parent, args, ctx, info){
-        if(!args.namesIn && !args.nameContains) throw new Error('There needs to be a tag query! No arguments given.')
         if(args.namesIn){
             return ctx.db.query.tags({
                 where: { name_in: args.namesIn }
@@ -51,6 +48,7 @@ const Query = {
                 where: { name_contains: args.nameContains }
             }, info)
         }
+        throw new Error('There needs to be a tag query! No arguments given.')
     },
 
     // 2 use cases
@@ -73,6 +71,7 @@ const Query = {
         throw new Error('There needs to be a location query! No arguments given.');
     },
 
+    // queries a single location, exact match
     async location(parent, args, ctx, info){
         if(!args.slug) throw new Error('No location query given.')
         return ctx.db.query.location({
