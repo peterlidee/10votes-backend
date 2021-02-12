@@ -34,6 +34,8 @@ const Query = {
         }, info);
     },
 
+    // TODO: return await to queries?????
+
     // 2 possibilities: 
     // 1. namesIn: [String!] looks for extact matches
     // 2. nameContains: String looks for all the tags that contain the query
