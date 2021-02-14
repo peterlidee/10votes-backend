@@ -74,7 +74,7 @@ const schema = gql`
         #calls LocationWhereInput, matches nameContains or (locationSlug AND countrycode)
         locations(nameContains: String, locationSlug: String, countryCode: String): [Location]!
         # calls (where: ItemWhereUniqueInput!)
-        item(id: ID!): Item
+        item(itemId: ID!): Item
     }
 `;
 

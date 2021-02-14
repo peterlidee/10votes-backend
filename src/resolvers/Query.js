@@ -6,9 +6,9 @@ const Query = {
     // items: forwardTo('db'),
 
     async item(parent, args, ctx, info){
-        if(!args.id) throw new Error('You need an ID to query an item.')
+        if(!args.itemId) throw new Error('You need an ID to query an item.')
         return await ctx.db.query.item({
-            where: { id: args.id }
+            where: { id: args.itemId }
         }, info);
     },
 
