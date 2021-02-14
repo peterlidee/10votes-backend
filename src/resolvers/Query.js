@@ -4,7 +4,14 @@ const { hasPermission } = require('../utils');
 const Query = {
 
     // items: forwardTo('db'),
-    // item: forwardTo('db'),
+
+    async item(parent, args, ctx, info){
+        if(!args.id) throw new Error('You need an ID to query an item.')
+        return await ctx.db.query.item({
+            where: { id: args.id }
+        }, info);
+    },
+
     // itemsConnection: forwardTo('db'),
     
     async me(parent, args, ctx, info){
