@@ -97,7 +97,7 @@ const Query = {
             where: { 
                 user: { id: ctx.req.userId } 
             }
-        })
+        }, info)
     }
 
 };
