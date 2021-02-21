@@ -63,6 +63,9 @@ const schema = gql`
         resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
         createItem(image: String, largeImage: String, location: String, tags: [String]!): Item!
         createTag(name: String!, slug: String!): Tag!
+        updateItem(id: ID!, location: String, newTagNames: [String], oldTagNames: [String], oldTagIds: [ID], voteCount: Int): Item!
+        castVote(itemId: ID!): Vote!
+        deleteVote(voteId: ID!, itemId: ID!): Vote!
     }
     type Query{
         me: User
@@ -75,6 +78,9 @@ const schema = gql`
         locations(nameContains: String, locationSlug: String, countryCode: String): [Location]!
         # calls (where: ItemWhereUniqueInput!)
         item(itemId: ID!): Item
+
+        # calls (where: VoteWhereInput) -> user: UserWhereInput  -> id: ID
+        votes: [Vote]!
     }
 `;
 

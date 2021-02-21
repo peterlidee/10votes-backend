@@ -5,7 +5,7 @@
 #}
 type Mutation{
     createItem(image: String, largeImage: String, location: String, tags: [String]!): Item!
-    #updateItem(id: ID!, location: String, newTagNames: [String], oldTagNames: [String], oldTagIds: [ID], voteCount: Int): Item!
+    updateItem(id: ID!, location: String, newTagNames: [String], oldTagNames: [String], oldTagIds: [ID], voteCount: Int): Item!
     #deleteItem(id: ID!): Item
     signup(email: String!, password: String!): User!
     login(email: String!, password: String!): User!
@@ -17,7 +17,7 @@ type Mutation{
     #createCountry(name: String!, countryCode: String!): Country!
     #createLocation(name: String!, country: ID!): Location!
     #updateLocation(id: ID!, itemCount: Int): Location!
-    #castVote(itemId: ID!): Vote!
+    castVote(itemId: ID!): Vote!
     #deleteVote(voteId: ID!, itemId: ID!): Vote!
 }
 type Query{

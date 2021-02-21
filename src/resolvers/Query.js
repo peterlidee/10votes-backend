@@ -86,10 +86,19 @@ const Query = {
         return ctx.db.query.location({
             where: { slug: args.slug }
         }, info)
-    }
+    },
     
     // locationsConnection: forwardTo('db'),
     // country: forwardTo('db'),
+
+    async votes(parent, args, ctx, info){
+        if(!ctx.req.userId) return [null];
+        return await ctx.db.votes({
+            where: { 
+                user: { id: ctx.req.userId } 
+            }
+        })
+    }
 
 };
 
