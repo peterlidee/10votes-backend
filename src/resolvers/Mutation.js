@@ -151,7 +151,6 @@ const Mutations = {
         return location;
     },*/
 
-    /*
 
     async updateItem(parent, args, ctx, info){
         
@@ -287,6 +286,8 @@ const Mutations = {
 
         return item;
     },
+
+    /*
 
     async deleteItem(parent, args, ctx, info){
         const where = { id: args.id };
@@ -439,6 +440,8 @@ const Mutations = {
         }, info);
     },
 
+    */
+
     async castVote(parent, args, ctx, info){
         // 1. is the user logged in?
         const userId = ctx.req.userId;
@@ -451,7 +454,7 @@ const Mutations = {
         const itemInVotes = ctx.req.user.votes.filter(vote => vote.item.id === args.itemId).length > 0;
         if(itemInVotes) throw new Error('You already voted for this item');
 
-        // 4. don't allow votes in own items
+        // 4. don't allow votes on own items
         const itemInOwnItems = ctx.req.user.items.filter(item => item.id === args.itemId).length > 0;
         if(itemInOwnItems) throw new Error('Voting on your own pictures leads to the dark side.')
 
@@ -463,11 +466,13 @@ const Mutations = {
             }
         }, info);
 
+        //console.log('vote',vote)
+
         // 6. use const vote to retrieve vote > items > votes , then update voteCount
-        const update = ctx.db.mutation.updateItem({
-            where: { id: args.itemId },
-            data: { voteCount: vote.item.votes.length }
-        });
+        // const update = ctx.db.mutation.updateItem({
+        //     where: { id: args.itemId },
+        //     data: { voteCount: vote.item.votes.length }
+        // });
         
         // 7. return vote
         return vote;
@@ -502,7 +507,7 @@ const Mutations = {
 
         // 5. return vote
         return vote;
-    },*/
+    },
 
 };
 
