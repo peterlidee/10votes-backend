@@ -80,13 +80,13 @@ const schema = gql`
         item(itemId: ID!): Item
 
         # calls (where: VoteWhereInput) -> user: UserWhereInput  -> id: ID
-        votes: [Vote]!
+        userVotes: [Vote]!
+        # use case: get all items from current user: where: ItemWhereInput -> user: UserWhereInput -> id
+        userItems: [Item]!
 
         #call (where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int)
         #items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
-        
-        # use case: get all items from current user: where: ItemWhereInput -> user: UserWhereInput -> id
-        userItems(): [Item]!
+
 
     }
 `;

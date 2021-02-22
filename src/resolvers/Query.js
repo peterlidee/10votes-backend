@@ -93,7 +93,7 @@ const Query = {
 
     // TODO: check if we need await
 
-    async votes(parent, args, ctx, info){
+    async userVotes(parent, args, ctx, info){
         if(!ctx.req.userId) return [null];
         return await ctx.db.query.votes({
             where: { 
