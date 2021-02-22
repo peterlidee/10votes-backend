@@ -468,6 +468,7 @@ const Mutations = {
 
         //console.log('vote',vote)
 
+        // TODO: remove voteCount?
         // 6. use const vote to retrieve vote > items > votes , then update voteCount
         // const update = ctx.db.mutation.updateItem({
         //     where: { id: args.itemId },

@@ -83,7 +83,7 @@ const Query = {
     // queries a single location, exact match
     async location(parent, args, ctx, info){
         if(!args.slug) throw new Error('No location query given.')
-        return ctx.db.query.location({
+        return await ctx.db.query.location({
             where: { slug: args.slug }
         }, info)
     },
@@ -91,15 +91,26 @@ const Query = {
     // locationsConnection: forwardTo('db'),
     // country: forwardTo('db'),
 
+    // TODO: check if we need await
+
     async votes(parent, args, ctx, info){
         if(!ctx.req.userId) return [null];
-        return await ctx.db.votes({
+        return await ctx.db.query.votes({
             where: { 
                 user: { id: ctx.req.userId } 
             }
         }, info)
-    }
+    },
 
+    // handle request for all the users items
+    async userItems(parent, args, ctx, info){
+        if(!ctx.req.userId) return [null];
+        return await ctx.db.query.items({
+            where: {
+                user: { id: ctx.req.userId }
+            }
+        }, info)
+    }
 };
 
 module.exports = Query;
