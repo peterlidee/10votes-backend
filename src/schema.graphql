@@ -21,10 +21,10 @@ type Mutation{
     #deleteVote(voteId: ID!, itemId: ID!): Vote!
 }
 type Query{
-    #item(where: ItemWhereUniqueInput!): Item
+    item(where: ItemWhereUniqueInput!): Item
     items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
     itemsConnection(where: ItemWhereInput): ItemConnection!
-    #me: User
+    me: User
     #users: [User]!
     
     tag(where: TagWhereUniqueInput!): Tag
@@ -33,7 +33,7 @@ type Query{
     locations(where: LocationWhereInput): [Location]!
     
     #locationsConnection(where: LocationWhereInput): LocationConnection!
-    #country(where: CountryWhereUniqueInput): Country
+    country(where: CountryWhereUniqueInput): Country
 }
 #type User{
 #    id: ID!

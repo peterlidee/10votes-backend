@@ -36,8 +36,6 @@ const Query = {
         return [];
     },
 
-    // itemsConnection: forwardTo('db'),
-
     async itemsConnection(parent, args, ctx, info){
         const query = {}
         // first check the taxonomy we're supposed to look up
@@ -128,6 +126,13 @@ const Query = {
         if(!args.slug) throw new Error('No location query given.')
         return await ctx.db.query.location({
             where: { slug: args.slug }
+        }, info)
+    },
+
+    async country(parent, args, ctx, info){
+        if(!args.countryCode) throw new Error('No country query was made.')
+        return await ctx.db.query.country({
+            where: { countryCode: args.countryCode }
         }, info)
     },
     

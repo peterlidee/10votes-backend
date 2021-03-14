@@ -103,6 +103,9 @@ const schema = gql`
         location(slug: String): Location
         #calls LocationWhereInput, matches nameContains or (locationSlug AND countrycode)
         locations(nameContains: String, locationSlug: String, countryCode: String): [Location]!
+        
+        country(countryCode: String!): Country
+
         # calls (where: ItemWhereUniqueInput!)
         item(itemId: ID!): Item
         #items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
