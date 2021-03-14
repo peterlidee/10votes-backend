@@ -5,7 +5,6 @@ const { promisify } = require('util');
 const { transport, makeANiceEmail } = require('../mail');
 const { hasPermission, removeDuplicates } = require('../utils');
 const slugify = require('slugify');
-const { nonExecutableDefinitionMessage } = require('graphql/validation/rules/ExecutableDefinitions');
 
 const Mutations = {
 
@@ -501,10 +500,10 @@ const Mutations = {
 
         // 4. update item's voteCount
         // const vote returns vote > item > votes
-        const update = await ctx.db.mutation.updateItem({
-            where: { id: args.itemId },
-            data: { voteCount: vote.item.votes.length }
-        });
+        // const update = await ctx.db.mutation.updateItem({
+        //     where: { id: args.itemId },
+        //     data: { voteCount: vote.item.votes.length }
+        // });
 
         // 5. return vote
         return vote;

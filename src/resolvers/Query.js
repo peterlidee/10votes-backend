@@ -12,7 +12,52 @@ const Query = {
         }, info);
     },
 
+    async items(parent, args, ctx, info){
+        // create queryParams
+        // items(
+        //     orderBy: $orderBy
+        //     skip: $skip,
+        //     first: $first
+        // )
+        const queryParams = {
+            orderBy: args.orderBy || 'createdAt_DESC',
+            skip: args.skip || 0,
+            first: args.first || 4, // TODO should equal clientside perPage from .env
+        }
+
+        // a query for items with tag was made
+        if(args.tagSlug){
+            // where: { tags_some: { slug: $slug }},
+            queryParams.where = { tags_some: { slug: args.tagSlug }};
+            return await ctx.db.query.items( queryParams, info );
+        }
+        throw new Error('No valid query was made');
+        // fall through option
+        return [];
+    },
+
     // itemsConnection: forwardTo('db'),
+
+    async itemsConnection(parent, args, ctx, info){
+        const query = {}
+        // first check the taxonomy we're supposed to look up
+        if(args.tagSlug){
+            query.where = { tags_some: { slug: args.tagSlug }}
+        }
+        if(args.locationSlug && args.countryCode){
+            query.where = { AND: [
+                 { location: { slug: args.locationSlug }},
+                 { location: { country: { countryCode: args.countryCode }}},
+            ]}
+        }
+        if(!args.locationSlug && args.countryCode){
+            query.where = { location: { country: { countryCode: args.countryCode }}}
+        }
+        if(!args.tagSlug && !args.countryCode){
+            throw new Error('There was a problem with the query. No sufficiant arguments.')
+        }
+        return await ctx.db.query.itemsConnection( query, info );
+    },
     
     async me(parent, args, ctx, info){
         //console.log('calling me query!!')
@@ -36,24 +81,22 @@ const Query = {
     // },
 
     async tag(parent, args, ctx, info){
-        return ctx.db.query.tag({
-            where: { name: args.name}
+        return await ctx.db.query.tag({
+            where: { slug: args.tagSlug}
         }, info);
     },
-
-    // TODO: return await to queries?????
 
     // 2 possibilities: 
     // 1. namesIn: [String!] looks for extact matches
     // 2. nameContains: String looks for all the tags that contain the query
     async tags(parent, args, ctx, info){
         if(args.namesIn){
-            return ctx.db.query.tags({
+            return await ctx.db.query.tags({
                 where: { name_in: args.namesIn }
             }, info)
         }
         if(args.nameContains){
-            return ctx.db.query.tags({
+            return await ctx.db.query.tags({
                 where: { name_contains: args.nameContains }
             }, info)
         }
@@ -65,12 +108,12 @@ const Query = {
     // 2. double exact match: slug and countrycode
     async locations(parent, args, ctx, info){
         if(args.nameContains){
-            return ctx.db.query.locations({
+            return await ctx.db.query.locations({
                 where: { name_contains: args.nameContains }
             }, info)
         }
         if(args.locationSlug && args.countryCode){
-            return ctx.db.query.locations({
+            return await ctx.db.query.locations({
                 where: { AND: [
                     { slug: args.locationSlug },
                     { country: { countryCode: args.countryCode }}
