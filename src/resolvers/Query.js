@@ -103,7 +103,7 @@ const Query = {
 
     // 2 use cases
     // 1. nameContains: matches all location names that contain string, f.e. 'tes' matches "testing" and "test"
-    // 2. double exact match: slug and countrycode
+    // 2. double exact match: slug and countrycode, used in LOCATION_EXISTS_QUERY
     async locations(parent, args, ctx, info){
         if(args.nameContains){
             return await ctx.db.query.locations({
@@ -129,8 +129,9 @@ const Query = {
         }, info)
     },
 
+    // queries a single country, exact match
     async country(parent, args, ctx, info){
-        if(!args.countryCode) throw new Error('No country query was made.')
+        if(!args.countryCode) throw new Error('No country query given.')
         return await ctx.db.query.country({
             where: { countryCode: args.countryCode }
         }, info)
