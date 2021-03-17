@@ -109,7 +109,7 @@ const schema = gql`
         # calls (where: ItemWhereUniqueInput!)
         item(itemId: ID!): Item
         #items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
-        items(tagSlug: String, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
+        items(tagSlug: String, locationSlug: String, countryCode: String, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
 
         itemsConnection(tagSlug: String, locationSlug: String, countryCode: String): ItemConnection!
 
