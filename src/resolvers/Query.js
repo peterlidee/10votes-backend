@@ -25,15 +25,26 @@ const Query = {
             first: args.first || 4, // TODO should equal clientside perPage from .env
         }
 
-        // a query for items with tag was made
-        if(args.tagSlug){
+        if(args.tagSlug){ //tag query
             // where: { tags_some: { slug: $slug }},
             queryParams.where = { tags_some: { slug: args.tagSlug }};
-            return await ctx.db.query.items( queryParams, info );
+        }else if(args.locationSlug && args.countryCode){ // location query
+            // where: { AND: [
+            //     { location: { slug: $slug }},
+            //     { location: { country: { countryCode: $countryCode }}},
+            // ]},
+            queryParams.where = { AND: [
+                { location: { slug: args.locationSlug }},
+                { location: { country: { countryCode: args.countryCode }}}
+            ]};
+        }else if(!args.locationSlug && args.countryCode){ // country query
+            // where: { location: { country: { countryCode: $countryCode }}}
+            queryParams.where = { location: { country: { countryCode: args.countryCode }}};
+        }else{
+            throw new Error('No valid query was made');
         }
-        throw new Error('No valid query was made');
-        // fall through option
-        return [];
+        // else do query
+        return await ctx.db.query.items( queryParams, info );
     },
 
     async itemsConnection(parent, args, ctx, info){
