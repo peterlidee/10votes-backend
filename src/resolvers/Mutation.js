@@ -110,47 +110,6 @@ const Mutations = {
 
     },
 
-    
-    async createTag(parent, args, ctx, info){
-        // only logged in people can create tags
-        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
-        const tag = await ctx.db.mutation.createTag({
-            data: {
-                name: args.name,
-                slug: args.slug
-            },
-        }, info);
-        return tag;
-    },
-
-    /*
-    async createCountry(parent, args, ctx, info){
-        const country = await ctx.db.mutation.createCountry({
-            data: {
-                name: args.name,
-                countryCode: args.countryCode,
-            }
-        }, info);
-        return country;
-    },
-
-    async createLocation(parent, args, ctx, info){
-        const slug = slugify(args.name, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
-        const location = await ctx.db.mutation.createLocation({
-            data: {
-                name: args.name,
-                slug: slug,
-                country: {
-                    connect: {
-                        name: "Belgium"
-                    }
-                },
-            }
-        }, info);
-        return location;
-    },*/
-
-
     async updateItem(parent, args, ctx, info){
         
         // you need to be logged in
@@ -273,8 +232,6 @@ const Mutations = {
 
         }// else, no changes to tags
 
-        // console.log('data variables', data);
-
         // 3. run the update method
         const item = await ctx.db.mutation.updateItem({
             data: data,
@@ -285,8 +242,6 @@ const Mutations = {
 
         return item;
     },
-
-    /*
 
     async deleteItem(parent, args, ctx, info){
         const where = { id: args.id };
@@ -309,7 +264,45 @@ const Mutations = {
 
         return deleted;
     },
-    */
+
+    async createTag(parent, args, ctx, info){
+        // only logged in people can create tags
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        const tag = await ctx.db.mutation.createTag({
+            data: {
+                name: args.name,
+                slug: args.slug
+            },
+        }, info);
+        return tag;
+    },
+
+    /*
+    async createCountry(parent, args, ctx, info){
+        const country = await ctx.db.mutation.createCountry({
+            data: {
+                name: args.name,
+                countryCode: args.countryCode,
+            }
+        }, info);
+        return country;
+    },
+
+    async createLocation(parent, args, ctx, info){
+        const slug = slugify(args.name, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+        const location = await ctx.db.mutation.createLocation({
+            data: {
+                name: args.name,
+                slug: slug,
+                country: {
+                    connect: {
+                        name: "Belgium"
+                    }
+                },
+            }
+        }, info);
+        return location;
+    },*/
 
     async signup(parent, args, ctx, info){
         // lowercase the email
@@ -465,14 +458,11 @@ const Mutations = {
             }
         }, info);
 
-        //console.log('vote',vote)
-
-        // TODO: remove voteCount?
         // 6. use const vote to retrieve vote > items > votes , then update voteCount
-        // const update = ctx.db.mutation.updateItem({
-        //     where: { id: args.itemId },
-        //     data: { voteCount: vote.item.votes.length }
-        // });
+        const update = await ctx.db.mutation.updateItem({
+            where: { id: args.itemId },
+            data: { voteCount: vote.item.votes.length }
+        });
         
         // 7. return vote
         return vote;
@@ -500,10 +490,10 @@ const Mutations = {
 
         // 4. update item's voteCount
         // const vote returns vote > item > votes
-        // const update = await ctx.db.mutation.updateItem({
-        //     where: { id: args.itemId },
-        //     data: { voteCount: vote.item.votes.length }
-        // });
+        const update = await ctx.db.mutation.updateItem({
+            where: { id: args.itemId },
+            data: { voteCount: vote.item.votes.length }
+        });
 
         // 5. return vote
         return vote;
