@@ -40,10 +40,8 @@ const Query = {
         }else if(!args.locationSlug && args.countryCode){ // country query
             // where: { location: { country: { countryCode: $countryCode }}}
             queryParams.where = { location: { country: { countryCode: args.countryCode }}};
-        }else{
-            throw new Error('No valid query was made');
         }
-        // else do query
+        // some item queries will have no slugs, fe. most recent or most voted on home page
         return await ctx.db.query.items( queryParams, info );
     },
 
