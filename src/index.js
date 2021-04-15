@@ -41,9 +41,6 @@ app.use(async (req, res, next) => {
     //console.log('user on req', req.user)
     next();
 });
-
-
-//const cors = require('cors'); // TODO remove?
     
 // set cors
 const corsOptions = {

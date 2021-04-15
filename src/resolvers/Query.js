@@ -1,4 +1,3 @@
-const { forwardTo }  = require('prisma-binding'); // TODO, remove ?
 const { hasPermission } = require('../utils');
 
 const Query = {
