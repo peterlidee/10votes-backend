@@ -287,22 +287,52 @@ const Mutations = {
         }, info);
         return country;
     },
+    */
 
+    // this mutation first checks if there's already a location by this name
+    // if so, it returns the already existing location
+    // else it creates and returns a new location
     async createLocation(parent, args, ctx, info){
-        const slug = slugify(args.name, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
-        const location = await ctx.db.mutation.createLocation({
-            data: {
-                name: args.name,
-                slug: slug,
-                country: {
-                    connect: {
-                        name: "Belgium"
-                    }
-                },
+
+        // only logged in people can create locations
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+
+        // cleanup the args.name
+        const locationName = args.name.trim();
+        // check if it isn't empty
+        if(locationName.length == 0){
+            throw new Error('The location name cannot be empty');
+        }
+
+        // does the new location already exist (is it in db?)
+        const locationQuery = await ctx.db.query.locations({
+            where: {
+                name: locationName
             }
-        }, info);
-        return location;
-    },*/
+        }, `{ id name slug country { id name countryCode }}`);
+
+        // if the location exists, we don't need to create it, just return the result
+        if(locationQuery[0]){
+            return locationQuery[0];
+        // else (no results), so create a new location
+        }else{
+            // create slug first
+            const locationSlug = slugify(locationName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+            // make the mutation
+            const location = await ctx.db.mutation.createLocation({
+                data: {
+                    name: locationName,
+                    slug: locationSlug,
+                    country: {
+                        connect: {
+                            countryCode: args.countryCode
+                        }
+                    },
+                }
+            }, info);
+            return location;
+        }  
+    },
 
     async signup(parent, args, ctx, info){
         // lowercase the email

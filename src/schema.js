@@ -88,18 +88,23 @@ const schema = gql`
         logout: SuccessMessage
         requestReset(email: String!): SuccessMessage
         resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
+
         createItem(image: String, largeImage: String, location: String, tags: [String]!): Item!
         updateItem(id: ID!, location: String, newTagNames: [String], oldTagNames: [String], oldTagIds: [ID], voteCount: Int): Item!
         deleteItem(id: ID!): Item
+
         createTag(name: String!, slug: String!): Tag!
         castVote(itemId: ID!): Vote!
         deleteVote(voteId: ID!, itemId: ID!): Vote!
+        
+        createLocation(name: String!, countryCode: String!): Location!
     }
     type Query{
         me: User
         tag(tagSlug: String!): Tag
         #calls TagWhereInput, namesIn for exact search, nameContains for partial fit, 'tes' will yield 'test' and 'test1'
         tags(namesIn: [String!], nameContains: String): [Tag]!
+
         #location(where: LocationWhereUniqueInput): Location
         location(slug: String): Location
         #calls LocationWhereInput, matches nameContains or (locationSlug AND countrycode)
