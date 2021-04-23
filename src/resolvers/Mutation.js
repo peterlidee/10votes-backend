@@ -265,29 +265,44 @@ const Mutations = {
         return deleted;
     },
 
+    // mutation to create tag
+    // first checks to see if tag already exists, if so, it returns said tag
+    // if not, it creates the tag and returns it
     async createTag(parent, args, ctx, info){
         // only logged in people can create tags
-        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
-        const tag = await ctx.db.mutation.createTag({
-            data: {
-                name: args.name,
-                slug: args.slug
-            },
-        }, info);
-        return tag;
+        //if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // clean up args.name
+        const tagName = args.name.trim();
+        // check if it isn't empty
+        if(tagName.length == 0){
+            throw new Error('The tag name cannot be empty');
+        }
+        // does the new tag already exist (is it in db?)
+        const tagQuery = await ctx.db.query.tag({
+            where: {
+                name: tagName
+            }
+        }, `{ id name slug }`);
+
+        // if thetag exists, we don't need to create it, just return the result
+        if(tagQuery){
+            return tagQuery;
+        // else (no results), so create a new tag
+        }else{
+            // create slug first
+            const tagSlug = slugify(tagName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+            // make the mutation
+            const tag = await ctx.db.mutation.createTag({
+                data: {
+                    name: tagName,
+                    slug: tagSlug,
+                }
+            }, info);
+            return tag;
+        }
     },
 
-    /*
-    async createCountry(parent, args, ctx, info){
-        const country = await ctx.db.mutation.createCountry({
-            data: {
-                name: args.name,
-                countryCode: args.countryCode,
-            }
-        }, info);
-        return country;
-    },
-    */
+
 
     // this mutation first checks if there's already a location by this name
     // if so, it returns the already existing location
@@ -333,6 +348,18 @@ const Mutations = {
             return location;
         }  
     },
+
+    /*
+    async createCountry(parent, args, ctx, info){
+        const country = await ctx.db.mutation.createCountry({
+            data: {
+                name: args.name,
+                countryCode: args.countryCode,
+            }
+        }, info);
+        return country;
+    },
+    */
 
     async signup(parent, args, ctx, info){
         // lowercase the email

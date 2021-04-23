@@ -83,6 +83,7 @@ const schema = gql`
 
 
     type Mutation{
+
         signup(email: String!, password: String!): User!
         login(email: String!, password: String!): User!
         logout: SuccessMessage
@@ -93,11 +94,12 @@ const schema = gql`
         updateItem(id: ID!, location: String, newTagNames: [String], oldTagNames: [String], oldTagIds: [ID], voteCount: Int): Item!
         deleteItem(id: ID!): Item
 
-        createTag(name: String!, slug: String!): Tag!
         castVote(itemId: ID!): Vote!
         deleteVote(voteId: ID!, itemId: ID!): Vote!
         
         createLocation(name: String!, countryCode: String!): Location!
+        createTag(name: String!): Tag!
+        
     }
     type Query{
         me: User
