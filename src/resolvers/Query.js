@@ -76,6 +76,28 @@ const Query = {
             where: { id: ctx.req.userId },
         }, info);
     },
+
+    async users(parent, args, ctx, info){
+        /*
+        // check if logged in
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // check if user is admin
+        const me = await ctx.db.query.user({
+            where: { id: ctx.req.userId },
+        }, `{ id permissions }`).catch(error => {
+            console.log('There was an error', error.message) // TODO better error handling?
+        });
+        if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
+        */
+
+        // cleanup args
+        const emailContains = args.emailContains.trim();
+        // check args.length
+        if(emailContains.length == 0) throw new Error("Please enter a search query.");
+        return await ctx.db.query.users({
+            where: { email_contains: emailContains }
+        }, info)
+    },
     
     // async users(parent, args, ctx, info){
     //     // are the logged in?

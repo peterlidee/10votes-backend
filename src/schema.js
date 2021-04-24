@@ -102,7 +102,11 @@ const schema = gql`
         
     }
     type Query{
+        #used to check if user is logged in
         me: User
+        # users: used in admin to find user by email or id?
+        users(emailContains: String): [User]!
+
         tag(tagSlug: String!): Tag
         #calls TagWhereInput, namesIn for exact search, nameContains for partial fit, 'tes' will yield 'test' and 'test1'
         tags(namesIn: [String!], nameContains: String): [Tag]!
@@ -111,14 +115,12 @@ const schema = gql`
         location(slug: String): Location
         #calls LocationWhereInput, matches nameContains or (locationSlug AND countrycode)
         locations(nameContains: String, locationSlug: String, countryCode: String): [Location]!
-        
         country(countryCode: String!): Country
 
         # calls (where: ItemWhereUniqueInput!)
         item(itemId: ID!): Item
         #items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
         items(tagSlug: String, locationSlug: String, countryCode: String, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
-
         itemsConnection(tagSlug: String, locationSlug: String, countryCode: String): ItemConnection!
 
         # calls (where: VoteWhereInput) -> user: UserWhereInput  -> id: ID

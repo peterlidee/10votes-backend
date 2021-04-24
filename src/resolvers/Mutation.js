@@ -269,8 +269,16 @@ const Mutations = {
     // first checks to see if tag already exists, if so, it returns said tag
     // if not, it creates the tag and returns it
     async createTag(parent, args, ctx, info){
-        // only logged in people can create tags
-        //if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // check if logged in
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // check if user is admin
+        const me = await ctx.db.query.user({
+            where: { id: ctx.req.userId },
+        }, `{ id permissions }`).catch(error => {
+            console.log('There was an error', error.message) // TODO better error handling?
+        });
+        if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
+        
         // clean up args.name
         const tagName = args.name.trim();
         // check if it isn't empty
@@ -309,8 +317,15 @@ const Mutations = {
     // else it creates and returns a new location
     async createLocation(parent, args, ctx, info){
 
-        // only logged in people can create locations
+        // check if logged in
         if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // check if user is admin
+        const me = await ctx.db.query.user({
+            where: { id: ctx.req.userId },
+        }, `{ id permissions }`).catch(error => {
+            console.log('There was an error', error.message) // TODO better error handling?
+        });
+        if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
 
         // cleanup the args.name
         const locationName = args.name.trim();
@@ -351,6 +366,15 @@ const Mutations = {
 
     /*
     async createCountry(parent, args, ctx, info){
+        // check if logged in
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // check if user is admin
+        const me = await ctx.db.query.user({
+            where: { id: ctx.req.userId },
+        }, `{ id permissions }`).catch(error => {
+            console.log('There was an error', error.message) // TODO better error handling?
+        });
+        if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
         const country = await ctx.db.mutation.createCountry({
             data: {
                 name: args.name,
