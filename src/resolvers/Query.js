@@ -156,9 +156,13 @@ const Query = {
 
     // queries a single location, exact match
     async location(parent, args, ctx, info){
-        if(!args.slug) throw new Error('No location query given.')
+        const variables = {}
+        if(args.locationSlug && args.locationSlug.length == 0) throw new Error('No valid location query given.')
+        if(args.locationId) variables.id = args.locationId;
+        if(args.locationSlug) variables.slug = args.locationSlug;
+        if(!args.locationSlug && !args.locationId) throw new Error('No location query given.')
         return await ctx.db.query.location({
-            where: { slug: args.slug }
+            where: variables
         }, info)
     },
 

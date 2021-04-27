@@ -112,7 +112,7 @@ const schema = gql`
         tags(namesIn: [String!], nameContains: String): [Tag]!
 
         #location(where: LocationWhereUniqueInput): Location
-        location(slug: String): Location
+        location(locationId: ID, locationSlug: String): Location
         #calls LocationWhereInput, matches nameContains or (locationSlug AND countrycode)
         locations(nameContains: String, locationSlug: String, countryCode: String): [Location]!
         country(countryCode: String!): Country
