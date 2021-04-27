@@ -107,7 +107,7 @@ const schema = gql`
         # users: used in admin to find user by email or id?
         users(emailContains: String): [User]!
 
-        tag(tagSlug: String!): Tag
+        tag(tagSlug: String, tagId: ID): Tag
         #calls TagWhereInput, namesIn for exact search, nameContains for partial fit, 'tes' will yield 'test' and 'test1'
         tags(namesIn: [String!], nameContains: String): [Tag]!
 

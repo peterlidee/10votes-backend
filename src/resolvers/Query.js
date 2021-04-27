@@ -78,7 +78,7 @@ const Query = {
     },
 
     async users(parent, args, ctx, info){
-        /*
+        
         // check if logged in
         if(!ctx.req.userId) throw new Error('You must be logged in to do this');
         // check if user is admin
@@ -88,7 +88,6 @@ const Query = {
             console.log('There was an error', error.message) // TODO better error handling?
         });
         if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
-        */
 
         // cleanup args
         const emailContains = args.emailContains.trim();
@@ -109,8 +108,12 @@ const Query = {
     // },
 
     async tag(parent, args, ctx, info){
+        const variables = {}
+        if(args.tagSlug)    variables.slug = args.tagSlug;
+        if(args.tagId)      variables.id = args.tagId;
+        if(!args.tagSlug && ! args.tagId) throw new Error('You need to query an ID or slug.')
         return await ctx.db.query.tag({
-            where: { slug: args.tagSlug}
+            where: variables
         }, info);
     },
 
