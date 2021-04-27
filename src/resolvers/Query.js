@@ -134,6 +134,18 @@ const Query = {
         throw new Error('There needs to be a tag query! No arguments given.')
     },
 
+    // queries a single location, exact match
+    async location(parent, args, ctx, info){
+        const variables = {}
+        if(args.locationSlug && args.locationSlug.length == 0) throw new Error('No valid location query given.')
+        if(args.locationId) variables.id = args.locationId;
+        if(args.locationSlug) variables.slug = args.locationSlug;
+        if(!args.locationSlug && !args.locationId) throw new Error('No location query given.')
+        return await ctx.db.query.location({
+            where: variables
+        }, info)
+    },
+
     // 2 use cases
     // 1. nameContains: matches all location names that contain string, f.e. 'tes' matches "testing" and "test"
     // 2. double exact match: slug and countrycode, used in LOCATION_EXISTS_QUERY
@@ -152,18 +164,6 @@ const Query = {
             }, info)
         }
         throw new Error('There needs to be a location query! No arguments given.');
-    },
-
-    // queries a single location, exact match
-    async location(parent, args, ctx, info){
-        const variables = {}
-        if(args.locationSlug && args.locationSlug.length == 0) throw new Error('No valid location query given.')
-        if(args.locationId) variables.id = args.locationId;
-        if(args.locationSlug) variables.slug = args.locationSlug;
-        if(!args.locationSlug && !args.locationId) throw new Error('No location query given.')
-        return await ctx.db.query.location({
-            where: variables
-        }, info)
     },
 
     // queries a single country, exact match
