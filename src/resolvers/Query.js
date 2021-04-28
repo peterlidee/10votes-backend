@@ -111,33 +111,29 @@ const Query = {
         const variables = {}
         if(args.tagSlug)    variables.slug = args.tagSlug;
         if(args.tagId)      variables.id = args.tagId;
-        if(!args.tagSlug && ! args.tagId) throw new Error('You need to query an ID or slug.')
+        if(!args.tagSlug && !args.tagId) throw new Error('You need to query an ID or slug.')
         return await ctx.db.query.tag({
             where: variables
         }, info);
     },
 
     // 2 possibilities: 
+    // TODO: names_in not used? remove???
     // 1. namesIn: [String!] looks for extact matches
     // 2. nameContains: String looks for all the tags that contain the query
     async tags(parent, args, ctx, info){
-        if(args.namesIn){
-            return await ctx.db.query.tags({
-                where: { name_in: args.namesIn }
-            }, info)
-        }
-        if(args.nameContains){
-            return await ctx.db.query.tags({
-                where: { name_contains: args.nameContains }
-            }, info)
-        }
-        throw new Error('There needs to be a tag query! No arguments given.')
+        const variables = {}
+        if(args.namesIn)        variables.name_in = args.namesIn;
+        if(args.nameContains)   variables.name_contains = args.nameContains;
+        if(!args.namesIn && !args.nameContains) throw new Error('There needs to be a tag query! No arguments given.')
+        return await ctx.db.query.tags({
+            where: variables
+        }, info)
     },
 
     // queries a single location, exact match
     async location(parent, args, ctx, info){
         const variables = {}
-        if(args.locationSlug && args.locationSlug.length == 0) throw new Error('No valid location query given.')
         if(args.locationId) variables.id = args.locationId;
         if(args.locationSlug) variables.slug = args.locationSlug;
         if(!args.locationSlug && !args.locationId) throw new Error('No location query given.')
