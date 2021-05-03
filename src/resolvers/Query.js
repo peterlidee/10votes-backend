@@ -77,6 +77,25 @@ const Query = {
         }, info);
     },
 
+    async user(parent, args, ctx, info){
+        // check if logged in
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // check if user is admin
+        const me = await ctx.db.query.user({
+            where: { id: ctx.req.userId },
+        }, `{ id permissions }`).catch(error => {
+            console.log('There was an error', error.message) // TODO better error handling?
+        });
+        if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
+
+        //  check if there is an id
+        if(!args.userId) throw new Error('No user specified.')
+        // make actual query of the user we're searching for
+        return await ctx.db.query.user({
+            where: { id: args.userId },
+        }, info);
+    },
+
     async users(parent, args, ctx, info){
         
         // check if logged in

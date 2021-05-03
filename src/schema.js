@@ -104,6 +104,8 @@ const schema = gql`
     type Query{
         #used to check if user is logged in
         me: User
+        #used to edit users
+        user(userId: ID): User
         # users: used in admin to find user by email or id?
         users(emailContains: String): [User]!
 
