@@ -50,6 +50,9 @@ const Query = {
         if(args.tagSlug){
             query.where = { tags_some: { slug: args.tagSlug }}
         }
+        if(args.tagId){
+            query.where = { tags_some: { id: args.tagId }}
+        }
         if(args.locationSlug && args.countryCode){
             query.where = { AND: [
                  { location: { slug: args.locationSlug }},
@@ -59,7 +62,7 @@ const Query = {
         if(!args.locationSlug && args.countryCode){
             query.where = { location: { country: { countryCode: args.countryCode }}}
         }
-        if(!args.tagSlug && !args.countryCode){
+        if(!args.tagSlug && ! args.tagId && !args.countryCode){
             throw new Error('There was a problem with the query. No sufficiant arguments.')
         }
         return await ctx.db.query.itemsConnection( query, info );
