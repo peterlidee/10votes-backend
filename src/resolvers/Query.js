@@ -86,7 +86,7 @@ const Query = {
         }, `{ id permissions }`).catch(error => {
             console.log('There was an error', error.message) // TODO better error handling?
         });
-        if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
+        if(!me.permissions.includes('ADMIN')) throw new Error("Admin, you are not.")
 
         //  check if there is an id
         if(!args.userId) throw new Error('No user specified.')
