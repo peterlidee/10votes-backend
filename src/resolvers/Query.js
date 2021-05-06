@@ -47,12 +47,10 @@ const Query = {
     async itemsConnection(parent, args, ctx, info){
         const query = {}
         // first check the taxonomy we're supposed to look up
-        if(args.tagSlug){
-            query.where = { tags_some: { slug: args.tagSlug }}
-        }
-        if(args.tagId){
-            query.where = { tags_some: { id: args.tagId }}
-        }
+        if(args.tagSlug) query.where = { tags_some: { slug: args.tagSlug }}
+        if(args.tagId) query.where = { tags_some: { id: args.tagId }}
+        
+        //if(args.locationId)
         if(args.locationSlug && args.countryCode){
             query.where = { AND: [
                  { location: { slug: args.locationSlug }},
