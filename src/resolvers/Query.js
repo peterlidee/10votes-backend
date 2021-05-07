@@ -47,20 +47,23 @@ const Query = {
     async itemsConnection(parent, args, ctx, info){
         const query = {}
         // first check the taxonomy we're supposed to look up
-        if(args.tagSlug) query.where = { tags_some: { slug: args.tagSlug }}
         if(args.tagId) query.where = { tags_some: { id: args.tagId }}
+        if(args.tagSlug) query.where = { tags_some: { slug: args.tagSlug }}
         
-        //if(args.locationId)
+        if(args.locationId) query.where = { location: { id: args.locationId }}
         if(args.locationSlug && args.countryCode){
             query.where = { AND: [
                  { location: { slug: args.locationSlug }},
                  { location: { country: { countryCode: args.countryCode }}},
             ]}
         }
-        if(!args.locationSlug && args.countryCode){
+
+        if(args.countryId) query.where = { location: { country: { id: args.countryId }}}
+        if(!args.locationSlug && args.countryCode){ // a country doesn't have a locationSlug
             query.where = { location: { country: { countryCode: args.countryCode }}}
         }
-        if(!args.tagSlug && ! args.tagId && !args.countryCode){
+
+        if(!args.tagSlug && !args.tagId && !args.countryCode && !args.countryId && !args.locationSlug && !args.locationId){
             throw new Error('There was a problem with the query. No sufficient arguments.')
         }
         return await ctx.db.query.itemsConnection( query, info );
