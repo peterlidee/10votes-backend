@@ -61,7 +61,7 @@ const Query = {
             query.where = { location: { country: { countryCode: args.countryCode }}}
         }
         if(!args.tagSlug && ! args.tagId && !args.countryCode){
-            throw new Error('There was a problem with the query. No sufficiant arguments.')
+            throw new Error('There was a problem with the query. No sufficient arguments.')
         }
         return await ctx.db.query.itemsConnection( query, info );
     },
