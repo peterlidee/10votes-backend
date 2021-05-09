@@ -2,8 +2,6 @@ const { hasPermission } = require('../utils');
 
 const Query = {
 
-    // items: forwardTo('db'),
-
     async item(parent, args, ctx, info){
         if(!args.itemId) throw new Error('You need an ID to query an item.')
         return await ctx.db.query.item({
@@ -64,7 +62,7 @@ const Query = {
         }
 
         if(!args.tagSlug && !args.tagId && !args.countryCode && !args.countryId && !args.locationSlug && !args.locationId){
-            throw new Error('There was a problem with the query. No sufficient arguments.')
+            throw new Error('There needs to be at least one query parameter.')
         }
         return await ctx.db.query.itemsConnection( query, info );
     },
@@ -120,15 +118,6 @@ const Query = {
             where: { email_contains: emailContains }
         }, info)
     },
-    
-    // async users(parent, args, ctx, info){
-    //     // are the logged in?
-    //     if(!ctx.req.userId) throw new Error('You need to be logged in');
-    //     // check if the user has the permission to query all the permissions
-    //     hasPermission(ctx.req.user, ['ADMIN', 'PERMISSIONUPDATE']);
-    //     // if they do, query all the users
-    //     return ctx.db.query.users({}, info);
-    // },
 
     async tag(parent, args, ctx, info){
         const variables = {}
@@ -154,7 +143,7 @@ const Query = {
         }, info)
     },
 
-    // queries a single location, exact match
+    // queries a single location, exact match for slug, or ID
     async location(parent, args, ctx, info){
         const variables = {}
         if(args.locationId) variables.id = args.locationId;
