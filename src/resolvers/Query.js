@@ -81,7 +81,7 @@ const Query = {
 
     async user(parent, args, ctx, info){
         // check if logged in
-        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        if(!ctx.req.userId) throw new Error('You must be logged in to query users.');
         // check if user is admin
         const me = await ctx.db.query.user({
             where: { id: ctx.req.userId },

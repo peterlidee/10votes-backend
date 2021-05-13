@@ -310,7 +310,23 @@ const Mutations = {
         }
     },
 
+    async deleteTag(parent, args, ctx, info){
+        // check if logged in
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // check if user is admin
+        const me = await ctx.db.query.user({
+            where: { id: ctx.req.userId },
+        }, `{ id permissions }`).catch(error => {
+            console.log('There was an error', error.message) // TODO better error handling?
+        });
+        if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
 
+        if(!args.tagId) throw new Error('No tag id found.')
+        const deleted = await ctx.db.mutation.deleteTag({
+            where: { id: args.tagId }
+        }, info);
+        return deleted;
+    },
 
     // this mutation first checks if there's already a location by this name
     // if so, it returns the already existing location

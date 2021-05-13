@@ -98,7 +98,9 @@ const schema = gql`
         deleteVote(voteId: ID!, itemId: ID!): Vote!
         
         createLocation(name: String!, countryCode: String!): Location!
+        
         createTag(name: String!): Tag!
+        deleteTag(tagId: ID!): Tag
         
     }
     type Query{
