@@ -100,6 +100,7 @@ const schema = gql`
         createLocation(name: String!, countryCode: String!): Location!
         
         createTag(name: String!): Tag!
+        updateTag(newTagName: String!, oldTagId: ID!): Tag
         deleteTag(tagId: ID!): Tag
         
     }

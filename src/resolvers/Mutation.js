@@ -310,6 +310,60 @@ const Mutations = {
         }
     },
 
+    async updateTag(parent, args, ctx, info){
+        // check if logged in
+        //if(!ctx.req.userId) throw new Error('You must be logged in to update a tag.');
+
+        if(!args.newTagName) throw new Error('There needs to be a new tag name.')
+        if(!args.oldTagId) throw new Error('There needs to be a current tag.')
+
+        // check if the newtag already exists
+        // exists: we need to merge: remove tag from all items, add new tag to those items, delete old tag
+        // !exists: update the oldTag with the newTag name + slug
+        
+        const newTagExists = await ctx.db.query.tag({
+            where: { name: args.newTagName }
+        }, `{ id name slug }`)
+
+        if(newTagExists){
+            // the tag already exists
+            // updateManyItems(data: ItemUpdateManyMutationInput!, where: ItemWhereInput): BatchPayload!
+            // this mutation doesn't allow to batch update tags ?? weird
+            // so, we need to query all the items with this tag
+            // and loop over them, updating them one at a time?
+            // maybe there's a better solution but I couldn't find one
+            // 1. get all items
+            const itemsWithTag = await ctx.db.query.items({
+                where: { tags_some: { id: args.oldTagId }}
+            }, `{ id }`)
+            // 2. take all items with oldTag, remove oldTag and add newTag
+            itemsWithTag.map(async(item) => {
+                await ctx.db.mutation.updateItem({
+                    where: { id: item.id },
+                    data: { tags: { 
+                        disconnect: { id: args.oldTagId },
+                        connect: { id: newTagExists.id },
+                    }}
+                });
+            })
+            // 2. delete oldTag
+            await ctx.db.mutation.deleteTag({
+                where: { id: args.oldTagId }
+            }, `{ id name slug }`)
+            // 3. return the already existing tag
+            return newTagExists;
+        }else{ 
+            // the tag doesn't already exist
+            // update the name and the slug of the 'old' one
+            // create slug first
+            const newTagSlug = slugify(args.newTagName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+            return await ctx.db.mutation.updateTag({
+                data: { name: args.newTagName, slug: newTagSlug },
+                where: { id: args.oldTagId },
+            })
+        }
+    },
+
     async deleteTag(parent, args, ctx, info){
         // check if logged in
         if(!ctx.req.userId) throw new Error('You must be logged in to do this');
