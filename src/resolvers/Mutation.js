@@ -327,6 +327,10 @@ const Mutations = {
 
         if(newTagExists){
             // the tag already exists
+
+            // check if the newTag is different from the old tag
+            if(args.oldTagId == newTagExists.id) throw new Error('The tag already has this name.')
+
             // updateManyItems(data: ItemUpdateManyMutationInput!, where: ItemWhereInput): BatchPayload!
             // this mutation doesn't allow to batch update tags ?? weird
             // so, we need to query all the items with this tag
@@ -341,7 +345,9 @@ const Mutations = {
                 await ctx.db.mutation.updateItem({
                     where: { id: item.id },
                     data: { tags: { 
-                        disconnect: { id: args.oldTagId },
+                        //disconnect: { id: args.oldTagId }, 
+                        // no need to disconnect, happens on delete
+                        // also, causes error cause it tries to disconnect a tag that got deleted
                         connect: { id: newTagExists.id },
                     }}
                 });
