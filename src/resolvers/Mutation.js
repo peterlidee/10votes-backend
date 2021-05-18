@@ -312,7 +312,7 @@ const Mutations = {
 
     async updateTag(parent, args, ctx, info){
         // check if logged in
-        //if(!ctx.req.userId) throw new Error('You must be logged in to update a tag.');
+        if(!ctx.req.userId) throw new Error('You must be logged in to update a tag.');
 
         if(!args.newTagName) throw new Error('There needs to be a new tag name.')
         if(!args.oldTagId) throw new Error('There needs to be a current tag.')
@@ -392,7 +392,6 @@ const Mutations = {
     // if so, it returns the already existing location
     // else it creates and returns a new location
     async createLocation(parent, args, ctx, info){
-
         // check if logged in
         if(!ctx.req.userId) throw new Error('You must be logged in to do this');
         // check if user is admin
@@ -438,6 +437,29 @@ const Mutations = {
             }, info);
             return location;
         }  
+    },
+
+    async deleteLocation(parent, args, ctx, info){
+        // check if logged in
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // check if user is admin
+        const me = await ctx.db.query.user({
+            where: { id: ctx.req.userId },
+        }, `{ id permissions }`).catch(error => {
+            console.log('There was an error', error.message) // TODO better error handling?
+        });
+        if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
+
+        if(!args.locationId) throw new Error('No locationID was submitted.')
+
+        // check if there are still items connected to this location
+        const items = await ctx.db.query.items({
+            where: { location: { id: args.locationId }}
+        }, `{ id }`)
+        if(items.length > 0) throw new Error('You cannot delete a location if it still has items in it.')
+        return await ctx.db.mutation.deleteLocation({
+            where: { id: args.locationId }
+        }, info)
     },
 
     /*
