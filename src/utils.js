@@ -1,3 +1,5 @@
+const slugify = require('slugify');
+
 function hasPermission(user, permissionsNeeded) {
   const matchedPermissions = user.permissions.filter(permissionTheyHave =>
     permissionsNeeded.includes(permissionTheyHave)
@@ -30,3 +32,10 @@ function removeDuplicates(array){
 }
 
 exports.removeDuplicates = removeDuplicates;
+
+// make slug from string
+function makeSlug(string){
+  return slugify(string, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+}
+
+exports.makeSlug = makeSlug;

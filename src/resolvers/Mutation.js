@@ -3,10 +3,15 @@ const jwt = require('jsonwebtoken');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 const { transport, makeANiceEmail } = require('../mail');
-const { hasPermission, removeDuplicates } = require('../utils');
-const slugify = require('slugify');
+const { hasPermission, removeDuplicates, makeSlug } = require('../utils');
 
 const Mutations = {
+
+    /* ************************************************************************
+    
+    ITEMS
+
+    **************************************************************************/
 
     async createItem(parent, args, ctx, info){
         // check if the user islogged in
@@ -34,11 +39,12 @@ const Mutations = {
             }
         }else{
             // else, create a new location
-            // make a slug
-            const slug = slugify(args.location, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+            // clean up and make a slug
+            const locationName = args.location.trim();
+            const slug = makeSlug(locationName);
             locationArgs = {
                 create: {
-                    name: args.location,
+                    name: locationName,
                     slug: slug,
                     country: { connect: { name: "Belgium" }}
                 }
@@ -47,8 +53,8 @@ const Mutations = {
         
         // 2. handle tags
 
-        //  we get an array of max 3 strings
-        //    each item may be a new or existing tag
+        // we get an array of max 3 strings
+        // each item may be a new or existing tag
 
        const tagsArgs = {};
        
@@ -87,8 +93,9 @@ const Mutations = {
             }
             if(createTags[0]){ // if there are any
                 tagsArgs.create = createTags.map(createTag => {
-                    const slug = slugify(createTag, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
-                    return { name: createTag, slug: slug }
+                    const tagName = createTag.trim();
+                    const slug = makeSlug(tagName);
+                    return { name: tagName, slug: slug }
                 });
             }
         }
@@ -144,11 +151,12 @@ const Mutations = {
                 }
             }else{
                 // else (no results), create a new location
-                // create slug first
-                const slug = slugify(args.location, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+                // clean up and create slug
+                const locationName = args.location.trim();
+                const slug = makeSlug(locationName)
                 data.location = {
                     create: {
-                        name: args.location,
+                        name: locationName,
                         slug: slug,
                         country: { connect: { name: "Belgium" }}
                     }
@@ -222,8 +230,9 @@ const Mutations = {
             }
             if(tagsToCreate.length){
                 data.tags.create = tagsToCreate.map(tagToCreate => {
-                    const slug = slugify(tagToCreate, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
-                    return { name: tagToCreate, slug: slug }
+                    const tagName = tagToCreate.trim();
+                    const slug = makeSlug(tagName)
+                    return { name: tagName, slug: slug }
                 });
             }
             if(tagsToDisconnect.length){
@@ -265,9 +274,15 @@ const Mutations = {
         return deleted;
     },
 
-    // mutation to create tag
-    // first checks to see if tag already exists, if so, it returns said tag
-    // if not, it creates the tag and returns it
+    /* ************************************************************************
+    
+    TAGS
+
+    **************************************************************************/
+
+    // check if tag already exists
+    // if so, return said tag
+    // if not, create the tag and returns it
     async createTag(parent, args, ctx, info){
         // check if logged in
         if(!ctx.req.userId) throw new Error('You must be logged in to do this');
@@ -290,7 +305,7 @@ const Mutations = {
             where: {
                 name: tagName
             }
-        }, `{ id name slug }`);
+        }, info);
 
         // if thetag exists, we don't need to create it, just return the result
         if(tagQuery){
@@ -298,7 +313,7 @@ const Mutations = {
         // else (no results), so create a new tag
         }else{
             // create slug first
-            const tagSlug = slugify(tagName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+            const tagSlug = makeSlug(tagName);
             // make the mutation
             const tag = await ctx.db.mutation.createTag({
                 data: {
@@ -309,6 +324,8 @@ const Mutations = {
             return tag;
         }
     },
+
+    // TODO: make one input clean function for all
 
     async updateTag(parent, args, ctx, info){
         // check if logged in
@@ -323,7 +340,7 @@ const Mutations = {
         
         const newTagExists = await ctx.db.query.tag({
             where: { name: args.newTagName }
-        }, `{ id name slug }`)
+        }, info)
 
         if(newTagExists){
             // the tag already exists
@@ -341,7 +358,7 @@ const Mutations = {
                 where: { tags_some: { id: args.oldTagId }}
             }, `{ id }`)
             // 2. take all items with oldTag, remove oldTag and add newTag
-            itemsWithTag.map(async(item) => {
+            const items = itemsWithTag.map(async(item) => {
                 await ctx.db.mutation.updateItem({
                     where: { id: item.id },
                     data: { tags: { 
@@ -352,19 +369,24 @@ const Mutations = {
                     }}
                 });
             })
-            // 2. delete oldTag
-            await ctx.db.mutation.deleteTag({
-                where: { id: args.oldTagId }
-            }, `{ id name slug }`)
+            Promise.all(items)
+                .then(
+                    // 2. delete oldTag
+                    await ctx.db.mutation.deleteTag({
+                        where: { id: args.oldTagId }
+                    }, info)
+                )
+                .catch(error => console.log(error))
             // 3. return the already existing tag
             return newTagExists;
         }else{ 
             // the tag doesn't already exist
             // update the name and the slug of the 'old' one
             // create slug first
-            const newTagSlug = slugify(args.newTagName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+            const tagName = args.newTagName.trim();
+            const tagSlug = makeSlug(tagName);
             return await ctx.db.mutation.updateTag({
-                data: { name: args.newTagName, slug: newTagSlug },
+                data: { name: tagName, slug: tagSlug },
                 where: { id: args.oldTagId },
             })
         }
@@ -388,7 +410,13 @@ const Mutations = {
         return deleted;
     },
 
-    // this mutation first checks if there's already a location by this name
+    /* ************************************************************************
+    
+    LOCATIONS
+
+    **************************************************************************/
+
+    // checks location name exists
     // if so, it returns the already existing location
     // else it creates and returns a new location
     async createLocation(parent, args, ctx, info){
@@ -414,7 +442,7 @@ const Mutations = {
             where: {
                 name: locationName
             }
-        }, `{ id name slug country { id name countryCode }}`);
+        }, info);
 
         // if the location exists, we don't need to create it, just return the result
         if(locationQuery[0]){
@@ -422,7 +450,7 @@ const Mutations = {
         // else (no results), so create a new location
         }else{
             // create slug first
-            const locationSlug = slugify(locationName, { lower: true, remove: /[*+_~.()'"!:@\/]/g });
+            const locationSlug = makeSlug(locationName);
             // make the mutation
             const location = await ctx.db.mutation.createLocation({
                 data: {
@@ -437,6 +465,57 @@ const Mutations = {
             }, info);
             return location;
         }  
+    },
+
+    async updateLocation(parent, args, ctx, info){
+        // check if logged in
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+
+        if(!args.newLocationName) throw new Error('There needs to be a new location name.')
+        if(!args.oldLocationId) throw new Error('There needs to be a current location.')
+
+        // check if the newLocationName already exists
+        // exists: we need to merge: remove location from all items, add new location to those items, delete old location
+        // !exists: update the oldLocationName with the newLocation name + slug
+
+        const newLocationName = args.newLocationName.trim();
+        const newLocationSlug = makeSlug(newLocationName);
+
+        const newLocationExists = await ctx.db.query.location({
+            where: { slug: newLocationSlug }
+        }, info)
+
+        if(newLocationExists){
+            // check if the new and old locations aren't the same
+            if(newLocationExists.id == args.oldLocationId) throw new Error('The new location is the same as the old.')
+            // the location already exists
+            // no bulk update for item locations, so we have to do it one by one
+            const items = await ctx.db.query.items({
+                where: { location: { id: args.oldLocationId }}
+            }, `{ id }`).catch(err => console.log(error.message));
+            // update items with new location
+            const updatedItems = items.map(async(item) => {
+                await ctx.db.mutation.updateItem({
+                    where: { id: item.id },
+                    data: { location: { connect: { id: newLocationExists.id }}}
+                });
+                return item;
+            });
+            Promise.all(updatedItems)
+                .then(async(items) => {
+                    // after the updates, delete old location
+                    const deleteLocation = await ctx.db.mutation.deleteLocation({
+                        where: { id: args.oldLocationId }
+                    }, info)
+                })
+                .catch(error => console.log(error));
+            return newLocationExists;
+        }else{ // the location doesn't exist, we update the oldLocation with new name and slug
+            return await ctx.db.mutation.updateLocation({
+                where: { id: args.oldLocationId },
+                data: { name: newLocationName, slug: newLocationSlug }
+            }, info);
+        }
     },
 
     async deleteLocation(parent, args, ctx, info){

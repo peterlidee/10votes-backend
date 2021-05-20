@@ -98,6 +98,7 @@ const schema = gql`
         deleteVote(voteId: ID!, itemId: ID!): Vote!
         
         createLocation(name: String!, countryCode: String!): Location!
+        updateLocation(newLocationName: String!, oldLocationId: ID!): Location
         deleteLocation(locationId: ID!): Location
         
         createTag(name: String!): Tag!
