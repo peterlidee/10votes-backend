@@ -16,9 +16,9 @@ type Mutation{
     createTag(name: String!, slug: String!): Tag!
     #createCountry(name: String!, countryCode: String!): Country!
     createLocation(name: String!, country: ID!): Location!
-    #updateLocation(id: ID!, itemCount: Int): Location!
+    updateLocation(id: ID!, itemCount: Int): Location!
     castVote(itemId: ID!): Vote!
-    #deleteVote(voteId: ID!, itemId: ID!): Vote!
+    deleteVote(voteId: ID!, itemId: ID!): Vote!
 }
 type Query{
     item(where: ItemWhereUniqueInput!): Item

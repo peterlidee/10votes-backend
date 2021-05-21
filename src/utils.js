@@ -39,3 +39,11 @@ function makeSlug(string){
 }
 
 exports.makeSlug = makeSlug;
+
+// cleanup input
+function cleanupInput(text){
+  if(!text) return false;
+  return text.trim().replace(/\s{2,}/g, ' ');
+}
+
+exports.cleanupInput = cleanupInput;

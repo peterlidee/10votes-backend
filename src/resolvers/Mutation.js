@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 const { transport, makeANiceEmail } = require('../mail');
-const { hasPermission, removeDuplicates, makeSlug } = require('../utils');
+const { hasPermission, removeDuplicates, makeSlug, cleanupInput } = require('../utils');
 
 const Mutations = {
 
@@ -19,15 +19,16 @@ const Mutations = {
 
         // 1. handle location
         
+        const locationName = cleanupInput(args.location);
         // check if there is a location
-        if(!args.location) throw new Error('You need to enter a location!');
+        if(!locationName) throw new Error('You need to enter a location!');
         
         // check it the location is a new one or an already existing one
         let locationArgs;
         // does it exist?
         const locationQuery = await ctx.db.query.locations({
             where: {
-                name: args.location
+                name: locationName
             }
         });
         // if the location exists, locationQuery[0] will be the result
@@ -40,12 +41,11 @@ const Mutations = {
         }else{
             // else, create a new location
             // clean up and make a slug
-            const locationName = args.location.trim();
-            const slug = makeSlug(locationName);
+            const locationSlug = makeSlug(locationName);
             locationArgs = {
                 create: {
                     name: locationName,
-                    slug: slug,
+                    slug: locationSlug,
                     country: { connect: { name: "Belgium" }}
                 }
             }
@@ -58,9 +58,10 @@ const Mutations = {
 
        const tagsArgs = {};
        
-        // 1. remove possible empty value
-        // 2. remove duplicates
-        const tags = removeDuplicates(args.tags).filter(tag => tag)
+        // 1. cleanup
+        const cleanTags = args.tags.map(tag => cleanupInput(tag));
+        // 2. remove possible empty value and remove duplicates
+        const tags = removeDuplicates(cleanTags).filter(tag => tag)
 
         // only when there are actually args
         if(tags.length > 0){
@@ -93,9 +94,8 @@ const Mutations = {
             }
             if(createTags[0]){ // if there are any
                 tagsArgs.create = createTags.map(createTag => {
-                    const tagName = createTag.trim();
-                    const slug = makeSlug(tagName);
-                    return { name: tagName, slug: slug }
+                    const tagSlug = makeSlug(createTag);
+                    return { name: createTag, slug: tagSlug }
                 });
             }
         }
@@ -127,19 +127,20 @@ const Mutations = {
         // check if the user has permission to do this
         const hasPermissions = ctx.req.user.permissions.some(permission => ['ADMIN', 'ITEM_DELETE'].includes(permission));
         if(!ownsItem && !hasPermissions){
-            throw new Error('You don\'t have permission to do that.')
+            throw new Error("You don't have permission to do that.")
         }        
 
         // construct the data variable
         let data = {};
 
         // 1. handle location
+        const locationName = cleanupInput(args.location);
         // if there's a new location
-        if(args.location){
+        if(args.locationName && locationName){
             // does the new location already exist (is it in db?)
             const locationQuery = await ctx.db.query.locations({
                 where: {
-                    name: args.location
+                    name: locationName
                 }
             });
             // if the location exists, locationQuery[0] will be the result
@@ -152,12 +153,11 @@ const Mutations = {
             }else{
                 // else (no results), create a new location
                 // clean up and create slug
-                const locationName = args.location.trim();
-                const slug = makeSlug(locationName)
+                const locationSlug = makeSlug(locationName)
                 data.location = {
                     create: {
                         name: locationName,
-                        slug: slug,
+                        slug: locationSlug,
                         country: { connect: { name: "Belgium" }}
                     }
                 }
@@ -167,11 +167,10 @@ const Mutations = {
 
 
         // 2. handle tags
-
         // only do stuff when there were changes to the tags
         if(args.newTagNames){
-
-            const { newTagNames, oldTagNames } = args;
+            const { oldTagNames } = args;
+            const newTagNames = args.newTagNames.map(newTagName => cleanupInput(newTagName));
             const tagsToConnect = [];
             const tagsToCreate = [];
             const tagsToDisconnect = [];
@@ -199,8 +198,6 @@ const Mutations = {
                     return true;
                 }
             );
-
-            // console.log('cleaned tags', cleanedTags)
 
             // now, this leaves us with a list of tags
             // we need to figure out which of these tags already exist and which are to be created
@@ -230,9 +227,8 @@ const Mutations = {
             }
             if(tagsToCreate.length){
                 data.tags.create = tagsToCreate.map(tagToCreate => {
-                    const tagName = tagToCreate.trim();
-                    const slug = makeSlug(tagName)
-                    return { name: tagName, slug: slug }
+                    const tagSlug = makeSlug(tagToCreate)
+                    return { name: tagToCreate, slug: tagSlug }
                 });
             }
             if(tagsToDisconnect.length){
@@ -295,16 +291,14 @@ const Mutations = {
         if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
         
         // clean up args.name
-        const tagName = args.name.trim();
+        const tagName = cleanupInput(args.name);
         // check if it isn't empty
-        if(tagName.length == 0){
+        if(!tagName){
             throw new Error('The tag name cannot be empty');
         }
         // does the new tag already exist (is it in db?)
         const tagQuery = await ctx.db.query.tag({
-            where: {
-                name: tagName
-            }
+            where: { name: tagName }
         }, info);
 
         // if thetag exists, we don't need to create it, just return the result
@@ -330,16 +324,17 @@ const Mutations = {
     async updateTag(parent, args, ctx, info){
         // check if logged in
         if(!ctx.req.userId) throw new Error('You must be logged in to update a tag.');
-
-        if(!args.newTagName) throw new Error('There needs to be a new tag name.')
+        
+        const newTagName = cleanupInput(args.newTagName);
+        if(!newTagName) throw new Error('There needs to be a new tag name.')
         if(!args.oldTagId) throw new Error('There needs to be a current tag.')
 
         // check if the newtag already exists
         // exists: we need to merge: remove tag from all items, add new tag to those items, delete old tag
         // !exists: update the oldTag with the newTag name + slug
-        
+
         const newTagExists = await ctx.db.query.tag({
-            where: { name: args.newTagName }
+            where: { name: newTagName }
         }, info)
 
         if(newTagExists){
@@ -383,10 +378,9 @@ const Mutations = {
             // the tag doesn't already exist
             // update the name and the slug of the 'old' one
             // create slug first
-            const tagName = args.newTagName.trim();
-            const tagSlug = makeSlug(tagName);
+            const newTagSlug = makeSlug(newTagName);
             return await ctx.db.mutation.updateTag({
-                data: { name: tagName, slug: tagSlug },
+                data: { name: newTagName, slug: newTagSlug },
                 where: { id: args.oldTagId },
             })
         }
@@ -431,17 +425,15 @@ const Mutations = {
         if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
 
         // cleanup the args.name
-        const locationName = args.name.trim();
+        const locationName = cleanupInput(args.name);
         // check if it isn't empty
-        if(locationName.length == 0){
+        if(!locationName){
             throw new Error('The location name cannot be empty');
         }
 
         // does the new location already exist (is it in db?)
         const locationQuery = await ctx.db.query.locations({
-            where: {
-                name: locationName
-            }
+            where: { name: locationName }
         }, info);
 
         // if the location exists, we don't need to create it, just return the result
@@ -471,15 +463,15 @@ const Mutations = {
         // check if logged in
         if(!ctx.req.userId) throw new Error('You must be logged in to do this');
 
-        if(!args.newLocationName) throw new Error('There needs to be a new location name.')
+        const newLocationName = cleanupInput(args.newLocationName);
+        const newLocationSlug = makeSlug(newLocationName);
+        if(!newLocationName) throw new Error('There needs to be a new location name.')
         if(!args.oldLocationId) throw new Error('There needs to be a current location.')
 
         // check if the newLocationName already exists
         // exists: we need to merge: remove location from all items, add new location to those items, delete old location
         // !exists: update the oldLocationName with the newLocation name + slug
 
-        const newLocationName = args.newLocationName.trim();
-        const newLocationSlug = makeSlug(newLocationName);
 
         const newLocationExists = await ctx.db.query.location({
             where: { slug: newLocationSlug }
@@ -561,6 +553,12 @@ const Mutations = {
         return country;
     },
     */
+
+    /* ************************************************************************
+    
+    USERS
+
+    **************************************************************************/
 
     async signup(parent, args, ctx, info){
         // lowercase the email
@@ -691,6 +689,12 @@ const Mutations = {
     },
 
     */
+
+    /* ************************************************************************
+    
+    VOTES
+
+    **************************************************************************/
 
     async castVote(parent, args, ctx, info){
         // 1. is the user logged in?
