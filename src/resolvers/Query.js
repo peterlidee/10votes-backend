@@ -1,4 +1,4 @@
-const { hasPermission } = require('../utils');
+const { hasPermission, cleanupInput } = require('../utils');
 
 const Query = {
 
@@ -135,8 +135,8 @@ const Query = {
     // 2. nameContains: String looks for all the tags that contain the query
     async tags(parent, args, ctx, info){
         const variables = {}
-        if(args.namesIn)        variables.name_in = args.namesIn;
-        if(args.nameContains)   variables.name_contains = args.nameContains;
+        if(args.namesIn)        variables.name_in = cleanupInput(args.namesIn);
+        if(args.nameContains)   variables.name_contains = cleanupInput(args.nameContains);
         if(!args.namesIn && !args.nameContains) throw new Error('There needs to be a tag query! No arguments given.')
         return await ctx.db.query.tags({
             where: variables
@@ -160,7 +160,7 @@ const Query = {
     async locations(parent, args, ctx, info){
         if(args.nameContains){
             return await ctx.db.query.locations({
-                where: { name_contains: args.nameContains }
+                where: { name_contains: cleanupInput(args.nameContains)}
             }, info)
         }
         if(args.locationSlug && args.countryCode){
