@@ -670,25 +670,26 @@ const Mutations = {
         return updatedUser;
     },
 
-    /*
-
     async updatePermissions(parent, args, ctx, info){
-        // 1. are they logged in
-        if(!ctx.req.userId) throw new Error('Must be logged in!');
-        // 2. query current user
-        const currentUser = await ctx.db.query.user({
-            where: { id: ctx.req.userId } 
-        }, info)
-        // 3. check if they have permission to do this
-        hasPermission(currentUser, ['ADMIN', 'PERMISSIONUPDATE']);
-        // 4. update the permissions
+        // check if logged in
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // check if user is admin
+        const me = await ctx.db.query.user({
+            where: { id: ctx.req.userId },
+        }, `{ id permissions }`).catch(error => {
+            console.log('There was an error', error.message) // TODO better error handling?
+        });
+        if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
+
+        // update the permissions
+        const permissions = ['USER'];
+        if(args.admin) permissions.push('ADMIN');
+
         return ctx.db.mutation.updateUser({
             where: { id: args.userId },
-            data: { permissions: { set: args.permissions }},
+            data: { permissions: { set: permissions }},
         }, info);
     },
-
-    */
 
     /* ************************************************************************
     
