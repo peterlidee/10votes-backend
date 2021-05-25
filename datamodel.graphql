@@ -13,14 +13,14 @@ type User {
   resetToken: String
   resetTokenExpiry: Float
   permissions: [Permission] @scalarList(strategy: RELATION)
-  items: [Item]!
-  votes: [Vote]!
+  items: [Item]! @relation(name: "UserToItems", onDelete: CASCADE)
+  votes: [Vote]! @relation(name: "UserToVotes", onDelete: CASCADE)
 }
 type Item {
   id: ID! @id
   image: String
   largeImage: String
-  user: User!
+  user: User! @relation(name: "UserToItems")
   location: Location!
   tags: [Tag]!
   createdAt: DateTime! @createdAt
@@ -48,5 +48,5 @@ type Location {
 type Vote {
   id: ID! @id
   item: Item! @relation(name: "ItemToVote", onDelete: SET_NULL)
-  user: User! 
+  user: User! @relation(name: "UserToVotes")
 }
