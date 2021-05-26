@@ -18,7 +18,7 @@ function hasPermission(user, permissionsNeeded) {
 
 exports.hasPermission = hasPermission;
 
-// remove duplicates from an array (also inlude lower and uppercase cases, so we can't use set)
+// remove duplicates from an array (also include lower and uppercase cases, so we can't use Set)
 // whitespaces where removed already!
 function removeDuplicates(array){
   const newArray = [];
