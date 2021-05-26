@@ -58,10 +58,9 @@ const Mutations = {
 
        const tagsArgs = {};
        
-        // 1. cleanup
-        const cleanTags = args.tags.map(tag => cleanupInput(tag));
-        // 2. remove possible empty value and remove duplicates
-        const tags = removeDuplicates(cleanTags).filter(tag => tag)
+       // 1. remove possible empty value and remove duplicates
+       // 2. cleanup
+        const tags = removeDuplicates(args.tags).filter(tag => tag).map(tag => cleanupInput(tag));
 
         // only when there are actually args
         if(tags.length > 0){
@@ -170,7 +169,8 @@ const Mutations = {
         // only do stuff when there were changes to the tags
         if(args.newTagNames){
             const { oldTagNames } = args;
-            const newTagNames = args.newTagNames.map(newTagName => cleanupInput(newTagName));
+            // filter out the empty ones, then clean the value up
+            const newTagNames = args.newTagNames.filter(newTagName => newTagName).map(newTagName => cleanupInput(newTagName));
             const tagsToConnect = [];
             const tagsToCreate = [];
             const tagsToDisconnect = [];
@@ -689,6 +689,39 @@ const Mutations = {
             where: { id: args.userId },
             data: { permissions: { set: permissions }},
         }, info);
+    },
+
+    async deleteUser(parent, args, ctx, info){
+        // check if logged in
+        // if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // // check if user is admin
+        // const me = await ctx.db.query.user({
+        //     where: { id: ctx.req.userId },
+        // }, `{ id permissions }`).catch(error => {
+        //     console.log('There was an error', error.message) // TODO better error handling?
+        // });
+        // if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
+
+        if(!args.userId) throw new Error('No such user found.')
+
+        // when we delete a user, he items and votes will also get deleted
+        // but, the voteCount for all the items, this user voted on, will now be wrong
+        // so we will have to update those
+        // const user = await ctx.db.query.user({
+        //     where: { id: args.userId }
+        // })
+
+        // can we use returned user from deleteUser to still grab his votes or are they already deleted???
+        const deleteUser = await ctx.db.mutation.deleteUser({
+            where: { id: args.userId }
+        }, `{id votes{ id item { id votes{ id }}}}`)
+            .then(res => {
+                // 
+                console.log('res', res)
+                res.deleteUser.votes.forEach(vote => console.log('vote',vote.id, vote.item.id, vote.item.votes))
+            })
+            .catch(error => console.log(error.message))
+
     },
 
     /* ************************************************************************
