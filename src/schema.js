@@ -90,6 +90,7 @@ const schema = gql`
         requestReset(email: String!): SuccessMessage
         resetPassword(resetToken: String!, password: String!, confirmPassword: String!): User!
         updatePermissions(admin: Boolean!, userId: ID!): User!
+        deleteUser(userId: ID!): User
 
         createItem(image: String, largeImage: String, location: String, tags: [String]!): Item!
         updateItem(id: ID!, location: String, newTagNames: [String], oldTagNames: [String], oldTagIds: [ID], voteCount: Int): Item!
