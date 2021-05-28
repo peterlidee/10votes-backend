@@ -693,35 +693,41 @@ const Mutations = {
 
     async deleteUser(parent, args, ctx, info){
         // check if logged in
-        // if(!ctx.req.userId) throw new Error('You must be logged in to do this');
-        // // check if user is admin
-        // const me = await ctx.db.query.user({
-        //     where: { id: ctx.req.userId },
-        // }, `{ id permissions }`).catch(error => {
-        //     console.log('There was an error', error.message) // TODO better error handling?
-        // });
-        // if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
+        if(!ctx.req.userId) throw new Error('You must be logged in to do this');
+        // check if user is admin
+        const me = await ctx.db.query.user({
+            where: { id: ctx.req.userId },
+        }, `{ id permissions }`).catch(error => {
+            console.log('There was an error', error.message) // TODO better error handling?
+        });
+        if(!me.permissions.includes('ADMIN')) throw new Error("You don't have the permissions to do this.")
 
         if(!args.userId) throw new Error('No such user found.')
 
         // when we delete a user, he items and votes will also get deleted
         // but, the voteCount for all the items, this user voted on, will now be wrong
         // so we will have to update those
-        // const user = await ctx.db.query.user({
-        //     where: { id: args.userId }
-        // })
+        const user = await ctx.db.query.user({
+            where: { id: args.userId }
+        }, `{ id votes{ id item{ id votes{id}}}}`)
+            .catch(error => console.log(error.message));
 
-        // can we use returned user from deleteUser to still grab his votes or are they already deleted???
+        // now, we have all the items the user voted in, we will update the voteCount of these after the user was deleted
+
+        // delete user
         const deleteUser = await ctx.db.mutation.deleteUser({
             where: { id: args.userId }
-        }, `{id votes{ id item { id votes{ id }}}}`)
-            .then(res => {
-                // 
-                console.log('res', res)
-                res.deleteUser.votes.forEach(vote => console.log('vote',vote.id, vote.item.id, vote.item.votes))
-            })
-            .catch(error => console.log(error.message))
+        },info).catch(error => console.log(error.message));
 
+        // the user was deleted, now update all the items that just lost a vote
+        user.votes.map(async(vote) => {
+            await ctx.db.mutation.updateItem({
+                where: { id: vote.item.id },
+                data: { voteCount: vote.item.votes.length }
+            }).catch(error => console.log('updateItem error', error.message))
+        });
+        
+        return deleteUser;
     },
 
     /* ************************************************************************
