@@ -130,6 +130,7 @@ const schema = gql`
         item(itemId: ID!): Item
         #items(where: ItemWhereInput, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
         items(tagSlug: String, locationSlug: String, countryCode: String, orderBy: ItemOrderByInput, skip: Int, first: Int): [Item]!
+        itemsByIds(ids: [ID!]!): [Item]!
         itemsConnection(tagSlug: String, tagId: ID, locationId: ID, locationSlug: String, countryId: ID, countryCode: String): ItemConnection!
 
         # calls (where: VoteWhereInput) -> user: UserWhereInput  -> id: ID

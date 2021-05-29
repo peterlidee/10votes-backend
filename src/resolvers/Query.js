@@ -42,6 +42,12 @@ const Query = {
         return await ctx.db.query.items( queryParams, info );
     },
 
+    async itemsByIds(parent, args, ctx, info){
+        return await ctx.db.query.items({
+            where: { id_in: args.ids }
+        }, info).catch(error => console.log(error.message))
+    },
+
     async itemsConnection(parent, args, ctx, info){
         const query = {}
         // first check the taxonomy we're supposed to look up
