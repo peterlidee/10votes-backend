@@ -75,7 +75,6 @@ const Mutations = {
             const connectTagIDs = [];
             const createTags = [];
             tags.map(tag => {
-                // console.log('tag', tag);
                 // lowercase both to get real match
                 const match = tagsQuery.find(tagQuery => tagQuery.name.toLowerCase() === tag.toLowerCase());
                 if(match){
@@ -184,7 +183,6 @@ const Mutations = {
                     }
                 });
             }
-            //console.log('tagsToDisconnect', tagsToDisconnect);
 
             // now check wich tags are to be added
             const cleanedTags = removeDuplicates(newTagNames)
@@ -318,8 +316,6 @@ const Mutations = {
             return tag;
         }
     },
-
-    // TODO: make one input clean function for all
 
     async updateTag(parent, args, ctx, info){
         // check if logged in
@@ -575,7 +571,6 @@ const Mutations = {
         //create the JWT token for them
         const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
         // we set the jwt as a cookie on the response
-        //console.log('token', token)
         
         ctx.res.cookie('token', token, {
             httpOnly: true,
@@ -771,7 +766,6 @@ const Mutations = {
     },
 
     async deleteVote(parent, args, ctx, info){
-        //console.log('args', args);
         // 1. is the user logged in?
         const userId = ctx.req.userId;
         if(!userId) throw new Error('You must be logged in');

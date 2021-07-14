@@ -74,8 +74,6 @@ const Query = {
     },
     
     async me(parent, args, ctx, info){
-        //console.log('calling me query!!')
-        //console.log('is there userId?', ctx.req.userId)
         // check if there is a current user id
         if(!ctx.req.userId){
             return null;
@@ -187,11 +185,6 @@ const Query = {
             where: { countryCode: args.countryCode }
         }, info)
     },
-    
-    // locationsConnection: forwardTo('db'),
-    // country: forwardTo('db'),
-
-    // TODO: check if we need await
 
     async userVotes(parent, args, ctx, info){
         if(!ctx.req.userId) return [null];

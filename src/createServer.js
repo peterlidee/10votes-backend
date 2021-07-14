@@ -7,7 +7,6 @@ const Mutation = require('./resolvers/Mutation.js');
 const db = require('./db');
 
 // we flipped from using schema.graphql to schema.js with gql
-// TODO delete .gql one
 const typeDefs = require('./schema.js');
 
 // create ApolloServer
@@ -23,7 +22,7 @@ function createServer(){
         },
         context: req => ({ ...req, db }),
         
-        // allow playground in prod //TODO
+        // allow playground in prod
         introspection: true,
         playground: true,
 
