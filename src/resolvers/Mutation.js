@@ -575,8 +575,8 @@ const Mutations = {
         ctx.res.cookie('token', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
-            secure: true,
-            sameSite: "none",
+            //secure: true,
+            //sameSite: "none",
         });
         //finally we return the user to the browser
         return user;
@@ -604,7 +604,11 @@ const Mutations = {
 
     logout(parent, args, ctx, info){
         // Cookie ‘token’ is geweigerd omdat deze al is verlopen. ? TODO?
-        ctx.res.clearCookie('token', { httpOnly: true, secure: true, sameSite: "none"});
+        ctx.res.clearCookie('token', { 
+            httpOnly: true, 
+            //secure: true, 
+            //sameSite: "none"
+        });
         return { message: 'Goodbye!'};
     },
     
