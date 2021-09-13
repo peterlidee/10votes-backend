@@ -575,7 +575,7 @@ const Mutations = {
         ctx.res.cookie('token', token, {
             httpOnly: true,
             maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
-            domain: "http://www.10votes.be"
+            domain: ".10votes.be"
             //secure: true,
             //sameSite: "none",
         });
