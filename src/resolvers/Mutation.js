@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 const { transport, makeANiceEmail } = require('../mail');
-const { hasPermission, removeDuplicates, makeSlug, cleanupInput } = require('../utils');
+const { hasPermission, removeDuplicates, makeSlug, cleanupInput, getCookieSettings } = require('../utils');
 
 const Mutations = {
 
@@ -571,14 +571,7 @@ const Mutations = {
         //create the JWT token for them
         const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
         // we set the jwt as a cookie on the response
-        
-        ctx.res.cookie('token', token, {
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
-            domain: ".10votes.be",
-            //secure: true,
-            //sameSite: "none",
-        });
+        ctx.res.cookie('token', token, getCookieSettings());
         //finally we return the user to the browser
         return user;
     },
@@ -595,23 +588,14 @@ const Mutations = {
         // 3. generate jwt token
         const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
         // 4. set the cookie with the token
-        ctx.res.cookie('token', token, {
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
-            domain: ".10votes.be",
-        });
+        ctx.res.cookie('token', token, getCookieSettings());
         // 5. return user
         return user;
     },
 
     logout(parent, args, ctx, info){
         // Cookie ‘token’ is geweigerd omdat deze al is verlopen. ? TODO?
-        ctx.res.clearCookie('token', { 
-            httpOnly: true,
-            domain: ".10votes.be",
-            //secure: true, 
-            //sameSite: "none"
-        });
+        ctx.res.clearCookie('token', getCookieSettings(false));
         return { message: 'Goodbye!'};
     },
     
@@ -664,11 +648,7 @@ const Mutations = {
         // 6. generate jwt
         const token = jwt.sign({ userId: updatedUser.id }, process.env.APP_SECRET);
         // 7. set the jwt cookie
-        ctx.res.cookie('token', token, {
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 365, // oneyear cookie 
-            domain: ".10votes.be",
-        });
+        ctx.res.cookie('token', token, getCookieSettings());
         // 8. return new user
         return updatedUser;
     },
