@@ -1,4 +1,4 @@
-const { hasPermission, cleanupInput } = require('../utils');
+const { hasPermission, cleanupInput, makeSlug } = require('../utils');
 
 const Query = {
 
@@ -139,11 +139,20 @@ const Query = {
     // 2. nameContains: String looks for all the tags that contain the query
     async tags(parent, args, ctx, info){
         const variables = {}
-        if(args.namesIn)        variables.name_in = cleanupInput(args.namesIn);
-        if(args.nameContains)   variables.name_contains = cleanupInput(args.nameContains);
-        if(!args.namesIn && !args.nameContains) throw new Error('There needs to be a tag query! No arguments given.')
+        // if(args.namesIn)        variables.name_in = cleanupInput(args.namesIn);
+        // if(args.nameContains)   variables.name_contains = cleanupInput(args.nameContains);
+        // if(!args.namesIn && !args.nameContains) throw new Error('There needs to be a tag query! No arguments given.')
+        if(!args.nameContains) throw new Error('There needs to be a tag query! No arguments given.')
+
+        // prisma1 doesn't support case insensitive queries (though it did work locally?)
+        // so we take the nameContains arg (this is the query that is made by the user)
+        // we slugify it and then search for that in the slug field of the tags type
+        // f.e. search "De Pin" will search for slug_contains "de_pin"
         return await ctx.db.query.tags({
-            where: variables
+            //where: variables
+            where: {
+                slug_contains: makeSlug(cleanupInput(args.nameContains))
+            }
         }, info)
     },
 

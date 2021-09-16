@@ -117,7 +117,10 @@ const schema = gql`
         users(emailContains: String): [User]!
 
         tag(tagSlug: String, tagId: ID): Tag
+
         #calls TagWhereInput, namesIn for exact search, nameContains for partial fit, 'tes' will yield 'test' and 'test1'
+        #todo remove namesIn?
+        
         tags(namesIn: [String!], nameContains: String): [Tag]!
 
         #location(where: LocationWhereUniqueInput): Location
