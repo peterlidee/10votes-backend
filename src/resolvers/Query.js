@@ -125,7 +125,7 @@ const Query = {
 
     async tag(parent, args, ctx, info){
         const variables = {}
-        if(args.tagSlug)    variables.slug = args.tagSlug;
+        if(args.tagSlug)    variables.slug = args.tagSlug.toLowerCase();
         if(args.tagId)      variables.id = args.tagId;
         if(!args.tagSlug && !args.tagId) throw new Error('You need to query an ID or slug.')
         return await ctx.db.query.tag({
@@ -159,21 +159,27 @@ const Query = {
         }, info)
     },
 
-    // 2 use cases
-    // 1. nameContains: matches all location names that contain string, f.e. 'tes' matches "testing" and "test"
-    // 2. double exact match: slug and countrycode, used in LOCATION_EXISTS_QUERY
+    // queries for a single location, exact match slug AND countrycode
+    // used on /location pages
+    // we use locations cause only way to match both
+    async locationExists(parent, args, ctx, info){
+        if(!args.locationSlug && !args.countryCode){
+            throw new Error('There needs to be a location query! Slug and or countryCode were missing!')
+        }
+        return await ctx.db.query.locations({
+            where: { AND: [
+                { slug: args.locationSlug.toLowerCase() },
+                { country: { countryCode: args.countryCode.toLowerCase() }}
+            ]}
+        }, info);
+    },
+
+    // nameContains: matches all location names that contain string, f.e. 'tes' matches "testing" and "test"
+    // because of case sensitivity, we search for slug, not actual name
     async locations(parent, args, ctx, info){
         if(args.nameContains){
             return await ctx.db.query.locations({
-                where: { name_contains: cleanupInput(args.nameContains)}
-            }, info)
-        }
-        if(args.locationSlug && args.countryCode){
-            return await ctx.db.query.locations({
-                where: { AND: [
-                    { slug: args.locationSlug },
-                    { country: { countryCode: args.countryCode }}
-                ]}
+                where: { slug_contains: makeSlug(cleanupInput(args.nameContains))}
             }, info)
         }
         throw new Error('There needs to be a location query! No arguments given.');
@@ -183,7 +189,7 @@ const Query = {
     async country(parent, args, ctx, info){
         if(!args.countryCode) throw new Error('No country query given.')
         return await ctx.db.query.country({
-            where: { countryCode: args.countryCode }
+            where: { countryCode: args.countryCode.toLowerCase() }
         }, info)
     },
 

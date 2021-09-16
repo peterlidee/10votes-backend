@@ -123,8 +123,13 @@ const schema = gql`
 
         #location(where: LocationWhereUniqueInput): Location
         location(locationId: ID, locationSlug: String): Location
-        #calls LocationWhereInput, matches nameContains or (locationSlug AND countrycode)
+
+        # calls locations, matches locationSlug and countryCode
+        locationExists(locationSlug: String, countryCode: String): [Location]!
+
+        # calls LocationWhereInput, matches nameContains or (locationSlug AND countrycode)
         locations(nameContains: String, locationSlug: String, countryCode: String): [Location]!
+
         country(countryCode: String, countryId: ID): Country
 
         # calls (where: ItemWhereUniqueInput!)
