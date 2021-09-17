@@ -697,6 +697,13 @@ const Mutations = {
 
         // now, we have all the items the user voted in, we will update the voteCount of these after the user was deleted
 
+        // first, delete all the items this user has
+        // we have to do this because of restraints on the ondelete: CASCADE directive in prisma1
+        const deleteItems = await ctx.db.mutation.deleteManyItems({
+            where: { user: { id: user.id }}
+        })
+        .catch(error => console.log('error deleting items', error.message));
+
         // delete user
         const deleteUser = await ctx.db.mutation.deleteUser({
             where: { id: args.userId }
