@@ -1,7 +1,7 @@
 # development
-# endpoint: ${env:PRISMA_ENDPOINT}
+endpoint: ${env:PRISMA_ENDPOINT}
 # prod endpoint
-endpoint: https://tenvotes-prisma-7cde417b7c.herokuapp.com/tenvotes-prod/prod
+# endpoint: https://tenvotes-prisma-7cde417b7c.herokuapp.com/tenvotes-prod/prod
 datamodel: datamodel.graphql
 secret: ${env:PRISMA_SECRET}
 generate:
