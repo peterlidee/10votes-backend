@@ -687,7 +687,7 @@ const Mutations = {
 
         if(!args.userId) throw new Error('No such user found.')
 
-        // when we delete a user, he items and votes will also get deleted
+        // when we delete a user, the items and votes will also get deleted
         // but, the voteCount for all the items, this user voted on, will now be wrong
         // so we will have to update those
         const user = await ctx.db.query.user({
@@ -701,8 +701,12 @@ const Mutations = {
         // we have to do this because of restraints on the ondelete: CASCADE directive in prisma1
         const deleteItems = await ctx.db.mutation.deleteManyItems({
             where: { user: { id: user.id }}
-        })
-        .catch(error => console.log('error deleting items', error.message));
+        }).catch(error => console.log('error deleting items', error.message));
+
+        // delete the users' votes
+        const deleteVotes = await ctx.db.mutation.deleteManyVotes({
+            where: { user: { id: user.id }}
+        }).catch(error => console.log('error deleting votes', error.message));
 
         // delete user
         const deleteUser = await ctx.db.mutation.deleteUser({
